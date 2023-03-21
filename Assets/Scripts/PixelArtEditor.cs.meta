@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: aba9ce8baa3d01f4b80972ccb94c57a3
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - pixelPrefab: {fileID: 7609595130414093356, guid: 7bf083cf67e56434bac0c77f73ba9e46, type: 3}
+  - grid: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
