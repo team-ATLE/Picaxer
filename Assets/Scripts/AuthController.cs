@@ -2,8 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using TMPro;
 using Firebase.Auth;
+using Firebase.Database;
+
+public class User {
+    public string email;
+    public string name;
+
+    public User() {
+    }
+
+    public User(string email, string name) {
+        this.email = email;
+        this.name = name;
+    }
+}
 
 public class AuthController : MonoBehaviour
 {
@@ -12,11 +27,13 @@ public class AuthController : MonoBehaviour
     public TMP_Text Message;
     string res;
     FirebaseAuth auth;
+    //DatabaseReference reference;
 
     void Start()
     {
         auth = FirebaseAuth.DefaultInstance;
-        res = "res";
+        //reference = FirebaseDatabase.DefaultInstance.RootReference;
+        res = "";
     }
 
     private void FixedUpdate()
@@ -55,17 +72,16 @@ public class AuthController : MonoBehaviour
 
     void signUp(string email, string password)
     {
-        
         auth.CreateUserWithEmailAndPasswordAsync(email, password).ContinueWith(
              task => {
                 if (!task.IsCanceled && !task.IsFaulted)
                 {
                     res = email + " : Successfully joined";
-                     
                 }
                 else
                 {
                     res = "Fail to join";
+                    return;
                 }
              }
          );
@@ -78,6 +94,7 @@ public class AuthController : MonoBehaviour
                 if (task.IsCompleted && !task.IsFaulted && !task.IsCanceled)
                 {
                     res = email + " : Successfully logged in";
+                    SceneManager.LoadScene("Main");
                 }
                 else
                 {
