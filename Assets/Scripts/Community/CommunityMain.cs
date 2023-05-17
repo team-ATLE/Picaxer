@@ -37,7 +37,7 @@ public class CommunityMain : MonoBehaviour
             Message.text = "Hello, your name is " + user.DisplayName + " and your email is " + user.Email;
         }
         else {
-            Message.text = "No user.";
+            Message.text = "You need to login first.";
         }
         
         scrollRect = GameObject.Find("Scroll View").GetComponent<ScrollRect>();
