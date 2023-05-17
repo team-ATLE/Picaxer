@@ -11,6 +11,7 @@ using Firebase.Storage;
 using System.Threading.Tasks;
 using Firebase.Extensions;
 using static Post;
+using static CommunityDAO;
 
 public class CreatePost : MonoBehaviour
 {
@@ -27,7 +28,9 @@ public class CreatePost : MonoBehaviour
         auth = FirebaseAuth.DefaultInstance;
         user = auth.CurrentUser;
         reference = FirebaseDatabase.DefaultInstance.RootReference;
-        storageReference = FirebaseStorage.DefaultInstance.GetReferenceFromUrl("gs://picaxer-22bea.appspot.com");
+        CommunityDAO dao = new CommunityDAO();
+        storageReference = FirebaseStorage.DefaultInstance.GetReferenceFromUrl(dao.getReferenceURL());
+        Debug.Log(dao.getReferenceURL());
     }
     
     void Create(string content)

@@ -4,10 +4,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
 using System;
+
 using Firebase;
 using Firebase.Extensions;
 using Firebase.Auth;
 using Firebase.Storage;
+using static CommunityDAO;
 
 public class LoadProfilePhoto : MonoBehaviour
 {
@@ -16,11 +18,11 @@ public class LoadProfilePhoto : MonoBehaviour
     FirebaseStorage storage;
     StorageReference storageReference;
 
-    IEnumerator imageLoad(string MediaUrl)
+    IEnumerator ProfileLoad(string MediaUrl)
     {
         UnityWebRequest request = UnityWebRequestTexture.GetTexture(MediaUrl);
         yield return request.SendWebRequest();
-        if(request.isNetworkError || request.isHttpError)
+        if(request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
         {
             Debug.Log(request.error);
         }
@@ -37,8 +39,8 @@ public class LoadProfilePhoto : MonoBehaviour
         auth = FirebaseAuth.DefaultInstance;
         Firebase.Auth.FirebaseUser user = auth.CurrentUser;
 
-        storage = FirebaseStorage.DefaultInstance;
-        storageReference = storage.GetReferenceFromUrl("gs://picaxer-22bea.appspot.com");
+        CommunityDAO dao = new CommunityDAO();
+        storageReference = FirebaseStorage.DefaultInstance.GetReferenceFromUrl(dao.getReferenceURL());
 
         //get reference of image
         StorageReference image = storageReference.Child("profile").Child(user.UserId+".jpg");
@@ -48,7 +50,7 @@ public class LoadProfilePhoto : MonoBehaviour
         {
             if (!task.IsFaulted && !task.IsCanceled)
             {
-                StartCoroutine(imageLoad(Convert.ToString(task.Result)));
+                StartCoroutine(ProfileLoad(Convert.ToString(task.Result)));
             }
         });
     }
