@@ -9,12 +9,13 @@ using Firebase.Auth;
 public class Main : MonoBehaviour
 {
     FirebaseAuth auth;
+    Firebase.Auth.FirebaseUser user;
     public TMP_Text Message;
 
     void Start()
     {
         auth = FirebaseAuth.DefaultInstance;
-        Firebase.Auth.FirebaseUser user = auth.CurrentUser;
+        user = auth.CurrentUser;
         if (user != null) {
             Message.text = "Hello, your name is " + user.DisplayName + " and your email is " + user.Email;
         }
@@ -34,6 +35,8 @@ public class Main : MonoBehaviour
     }
 
     public void SignOutClick() {
-
+        auth.SignOut();
+        user.DeleteAsync();
+        SceneManager.LoadScene("Sign");
     }
 }

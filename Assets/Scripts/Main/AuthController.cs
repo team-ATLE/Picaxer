@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
 using Firebase.Auth;
+using Firebase.Extensions;
 
 public class User {
     public string email;
@@ -30,7 +31,10 @@ public class AuthController : MonoBehaviour
     void Start()
     {
         auth = FirebaseAuth.DefaultInstance;
-        res = "";
+        if (auth.CurrentUser != null)
+            res = auth.CurrentUser.DisplayName;
+        else
+            res = "";
     }
 
     private void FixedUpdate()
@@ -69,7 +73,7 @@ public class AuthController : MonoBehaviour
 
     void signUp(string email, string password)
     {
-        auth.CreateUserWithEmailAndPasswordAsync(email, password).ContinueWith(
+        auth.CreateUserWithEmailAndPasswordAsync(email, password).ContinueWithOnMainThread(
              task => {
                 if (!task.IsCanceled && !task.IsFaulted)
                 {
@@ -86,7 +90,7 @@ public class AuthController : MonoBehaviour
 
     void signIn(string email, string password)
     {
-        auth.SignInWithEmailAndPasswordAsync(email, password).ContinueWith(
+        auth.SignInWithEmailAndPasswordAsync(email, password).ContinueWithOnMainThread(
             task => {
                 if (task.IsCompleted && !task.IsFaulted && !task.IsCanceled)
                 {

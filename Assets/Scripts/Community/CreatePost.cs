@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 using Firebase;
@@ -46,6 +47,7 @@ public class CreatePost : MonoBehaviour
 
                 // Create a reference to the file you want to upload
                 StorageReference imageRef = storageReference.Child("post").Child(imageURL);
+                bool isCompleted = false;
 
                 // Upload the file to the path
                 imageRef.PutFileAsync(localFile).ContinueWith((Task<StorageMetadata> task2) => {
@@ -69,8 +71,14 @@ public class CreatePost : MonoBehaviour
                         reference.Child("Post").Child(id.ToString()).SetRawJsonValueAsync(json);
 
                         Debug.Log("Upload complete");
+                        isCompleted = true;
                     }
                 });
+
+                while (true) {
+                    if (isCompleted) SceneManager.LoadScene("CommunityMain");
+                } 
+                    
             }
         });
     }
@@ -78,5 +86,10 @@ public class CreatePost : MonoBehaviour
     public void PostClick() 
     {
         Create(Content.text);
+    }
+
+    public void BackClick()
+    {
+        SceneManager.LoadScene("CommunityMain");
     }
 }

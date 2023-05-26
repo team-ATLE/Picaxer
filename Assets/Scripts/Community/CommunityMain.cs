@@ -108,4 +108,14 @@ public class CommunityMain : MonoBehaviour
         PrintRawImage();
         currSize += 15;
     }
+
+    public void BackClick()
+    {
+        SceneManager.LoadScene("Main");
+    }
+
+    public void NewPostClick()
+    {
+        SceneManager.LoadScene("CreatePost");
+    }
 }
