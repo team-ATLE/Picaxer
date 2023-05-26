@@ -64,5 +64,4 @@ crashlytics-build.properties
 [Aa]ssets/Firebase/
 [Aa]ssets/Parse/
 [Aa]ssets/Plugins/
-*.meta
 google-services*.*
