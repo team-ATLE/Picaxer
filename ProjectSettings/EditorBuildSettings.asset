@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
-    guid: 2cda990e2423bbf4892e6590ba056729
+    path: Assets/Scenes/PixelArtEditor.unity
+    guid: de8b6bd9e3702f649a798c6b844520ae
+  - enabled: 1
+    path: Assets/Scenes/Exporter.unity
+    guid: ea88383f967fef24594662fc3da56043
   m_configObjects: {}

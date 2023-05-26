@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System.IO;
 
 [System.Serializable]
 public class PixelArtData
@@ -38,24 +39,25 @@ public class PixelArtData
     // Json 데이터를 불러와 PixelArtData 객체로 변환하는 메서드
     public static PixelArtData Load()
     {
-        if (!PlayerPrefs.HasKey("PixelArt"))
+        string path = Application.dataPath + "/PixelArtData.json";
+        if (!File.Exists(path))
         {
             Debug.LogError("No PixelArt data found.");
             return null;
         }
 
-        if (!PlayerPrefs.HasKey("PixelArtWidth") || !PlayerPrefs.HasKey("PixelArtHeight"))
-        {
-            Debug.LogError("No PixelArt width and height data found.");
-            return null;
-        }
+        string json = File.ReadAllText(path);
+        PixelArtData data = JsonUtility.FromJson<PixelArtData>(json);
 
-        int width = int.Parse(PlayerPrefs.GetString("PixelArtWidth"));
-        int height = int.Parse(PlayerPrefs.GetString("PixelArtHeight"));
-        string colorString = PlayerPrefs.GetString("PixelArt");
-
-        PixelArtData data = new PixelArtData(width, height, colorString);
         return data;
+    }
+
+    // 픽셀 아트 데이터를 JSON 파일로 저장하는 메서드
+    public void Save()
+    {
+        string path = Application.dataPath + "/PixelArtData.json";
+        string json = ToJson();
+        File.WriteAllText(path, json);
     }
 
     // 색상 리스트를 문자열로 변환하는 메서드
@@ -92,5 +94,4 @@ public class PixelArtData
 
         return colorList;
     }
-
 }
