@@ -65,3 +65,7 @@ crashlytics-build.properties
 [Aa]ssets/Parse/
 [Aa]ssets/Plugins/
 google-services*.*
+
+# etc
+Images
+firebase_unity_sdk
