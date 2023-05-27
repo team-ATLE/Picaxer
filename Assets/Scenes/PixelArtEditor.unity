@@ -2295,6 +2295,8 @@ MonoBehaviour:
   clearButton: {fileID: 790196617}
   colorOptions: []
   defaultColor: {r: 1, g: 1, b: 1, a: 1}
+  imageExporter: {fileID: 0}
+  exportButton: {fileID: 1801090973}
 --- !u!4 &813099601
 Transform:
   m_ObjectHideFlags: 0
@@ -4775,9 +4777,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1551984756}
+      - m_Target: {fileID: 11500000, guid: 8e319aa23ae2d78468eea38b7739599a, type: 3}
         m_TargetAssemblyTypeName: SceneChanger, Assembly-CSharp
-        m_MethodName: ChangeScene
+        m_MethodName: 
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5132,7 +5134,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 263648421}
   m_Direction: 0
   m_Value: 1
-  m_Size: 1
+  m_Size: 0.99999964
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

@@ -34,6 +34,9 @@ public class PixelArtEditor : MonoBehaviour
     private int calculatedPixelSize;
 
 
+    public ImageExporter imageExporter; // ImageExporter 참조 추가
+
+    public Button exportButton; // Export 버튼 선언
 
     // 초기화, 유니티에서는 Awake로 초기화한다
     void Awake()
@@ -61,6 +64,10 @@ public class PixelArtEditor : MonoBehaviour
         // 로드시 이름
         loadButton.onClick.AddListener(() => LoadPixelArt());
 
+
+        // Export 버튼 클릭 이벤트 연결
+        exportButton.onClick.AddListener(() => ExportPixelArt(nameInput.text)); 
+   
 
     }
 
@@ -363,6 +370,59 @@ public class PixelArtEditor : MonoBehaviour
             pixelImage.color = data.colors[i];
             i++;
         }
+    }
+
+    
+    // Pixel Art를 PNG Export하는 함수
+    public void ExportPixelArt(string pixelArtName)
+    {
+        if (string.IsNullOrEmpty(pixelArtName))
+        {
+            Debug.LogError("No file name provided.");
+            return;
+        }
+
+        // 그리드 캡쳐를 위한 RenderTexture 생성
+        
+        int width = Mathf.RoundToInt(grid.rect.width);
+        int height = Mathf.RoundToInt(grid.rect.height);
+        RenderTexture renderTexture = new RenderTexture(width, height, 0, RenderTextureFormat.ARGB32);
+        renderTexture.antiAliasing = 8;
+
+
+        // 캔버스를 RenderTexture에 렌더링
+        CanvasRenderer renderer = grid.GetComponent<CanvasRenderer>();
+        renderer.SetMaterial(new Material(Shader.Find("Unlit/Texture")), Texture2D.whiteTexture);
+        renderer.SetTexture(renderTexture);
+
+        // 현재 RenderTexture를 활성화
+        RenderTexture currentActiveRT = RenderTexture.active;
+        RenderTexture.active = renderTexture;
+
+        // 화면을 캡쳐하여 새 Texture2D에 저장
+        Texture2D texture = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.ARGB32, false);
+        texture.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
+        texture.Apply();
+
+        // 원래의 RenderTexture를 활성화
+        RenderTexture.active = currentActiveRT;
+
+        // 캡쳐된 텍스쳐를 PNG로 변환
+        byte[] bytes = texture.EncodeToPNG();
+
+        // ExportedPng 디렉토리 생성
+        string directoryPath = Path.Combine(Application.dataPath, "ExportedPng");
+
+        if (!Directory.Exists(directoryPath))
+        {
+            Directory.CreateDirectory(directoryPath);
+        }
+
+        // PNG 파일 저장
+        string filePath = Path.Combine(directoryPath, pixelArtName + ".png");
+        File.WriteAllBytes(filePath, bytes);
+
+        Debug.Log("Pixel Art exported!");
     }
 
 
