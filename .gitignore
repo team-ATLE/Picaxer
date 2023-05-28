@@ -58,3 +58,15 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
+# Ignore firebase package
+[Aa]ssets/Editor Default Resources/
+[Aa]ssets/ExternalDependencyManager/
+[Aa]ssets/Firebase/
+[Aa]ssets/Parse/
+[Aa]ssets/Plugins/
+google-services*.*
+
+# etc
+Images
+firebase_unity_sdk
+Assets/Scripts/Community/CommunityDAO.cs
