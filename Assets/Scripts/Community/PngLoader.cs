@@ -42,7 +42,7 @@ public class PngLoader : MonoBehaviour
             string fileName = Path.GetFileNameWithoutExtension(filePath);
             Texture2D texture = LoadTextureFromFile(filePath);
             button.GetComponentInChildren<RawImage>().texture = texture; 
-            button.GetComponent<Button>().onClick.AddListener(() => createPost.UpdateImgURL(fileName)); // 여기서 픽셀아트 로드(나는 value change)
+            button.GetComponentInChildren<Button>().onClick.AddListener(() => createPost.UpdateImgURL(fileName)); // 여기서 픽셀아트 로드(나는 value change)
         }
     }
 

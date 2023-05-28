@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 7629245302160919535}
   - component: {fileID: 4070735540259698486}
-  - component: {fileID: 6956521137321908541}
-  - component: {fileID: 8030817395356411090}
+  - component: {fileID: 3953737690556875680}
+  - component: {fileID: 1333808356603049741}
   m_Layer: 5
   m_Name: PngListButton
   m_TagString: Untagged
@@ -37,7 +37,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 150, y: 150}
+  m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4070735540259698486
 CanvasRenderer:
@@ -47,7 +47,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1935749331228271047}
   m_CullTransparentMesh: 1
---- !u!114 &6956521137321908541
+--- !u!114 &3953737690556875680
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -87,11 +87,11 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 8030817395356411090}
+  m_TargetGraphic: {fileID: 0}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &8030817395356411090
+--- !u!114 &1333808356603049741
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
