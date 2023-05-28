@@ -4,7 +4,7 @@ MonoImporter:
   externalObjects: {}
   serializedVersion: 2
   defaultReferences:
-  - buttonPrefab: {fileID: 1935749331228271047, guid: 9c53219d3846fbc428d4c985e6b13da6, type: 3}
+  - buttonPrefab: {fileID: 1935749331228271047, guid: f21e0429bf781ec409d055391339a066, type: 3}
   - contentPanel: {instanceID: 0}
   - pixelArtEditor: {instanceID: 0}
   executionOrder: 0
