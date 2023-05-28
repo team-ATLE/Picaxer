@@ -62,7 +62,7 @@ public class PixelArtEditor : MonoBehaviour
         
         saveButton.onClick.AddListener(() => SavePixelArt(nameInput.text));
         // 로드시 이름
-        loadButton.onClick.AddListener(() => LoadPixelArt());
+        loadButton.onClick.AddListener(() => LoadPixelArt(nameInput.text));
 
 
         // Export 버튼 클릭 이벤트 연결
@@ -318,30 +318,31 @@ public class PixelArtEditor : MonoBehaviour
 
 
     // 로드
-    public void LoadPixelArt()
+    public void LoadPixelArt(string pixelArtName)
     {
-        string inputPixelArtName = nameInput.text;
-
-        if (string.IsNullOrEmpty(inputPixelArtName))
+       
+       //픽셀 아트의 이름을 문자열 매개변수로 받게 수정 
+        if (string.IsNullOrEmpty(pixelArtName))
         {
-            Debug.LogError("No file name provided.");
+            Debug.LogError("작성된 파일 이름이 없습니다.");
             return;
         }
 
-        string filePath = Path.Combine(Application.dataPath, "SavedPixelArts", inputPixelArtName + ".json");
+        string filePath = Path.Combine(Application.dataPath, "SavedPixelArts", pixelArtName + ".json");
 
         if (!File.Exists(filePath))
         {
-            Debug.LogWarning("No saved Pixel Art data found. Skipping the load.");
+            Debug.LogWarning("저장된 Pixel Art 데이터를 찾을 수 없습니다. 로드를 건너뜁니다.");
             return;
         }
 
         string jsonData = File.ReadAllText(filePath);
         PixelArtData data = JsonUtility.FromJson<PixelArtData>(jsonData);
 
+
         if (data == null)
         {
-            Debug.LogWarning("No saved Pixel Art data found. Skipping the load.");
+            Debug.LogWarning("저장된 Pixel Art 데이터를 찾을 수 없습니다. 로드를 건너뜁니다.");
             return;
         }
 
