@@ -206,7 +206,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fadeInTime: 2
   waitTime: 1
-  nextScene: PixelArtEditor
+  nextScene: Sign
   iconImage: {fileID: 2102453875}
 --- !u!222 &440554401
 CanvasRenderer:
