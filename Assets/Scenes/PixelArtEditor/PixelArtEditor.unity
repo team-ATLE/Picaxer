@@ -1421,7 +1421,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59bcf070575a6e844aa940114d02b1f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buttonPrefab: {fileID: 1935749331228271047, guid: 9c53219d3846fbc428d4c985e6b13da6, type: 3}
+  buttonPrefab: {fileID: 1935749331228271047, guid: f21e0429bf781ec409d055391339a066, type: 3}
   contentPanel: {fileID: 572787448}
   pixelArtEditor: {fileID: 813099600}
 --- !u!1 &586960749
