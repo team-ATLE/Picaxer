@@ -38,6 +38,22 @@ public class PixelArtEditor : MonoBehaviour
 
     public Button exportButton; // Export 버튼 선언
 
+    // 색버튼 추가 선언
+    public TMP_InputField rInputField;
+    public TMP_InputField gInputField;
+    public TMP_InputField bInputField;
+    public Button addColorButton;
+
+    public Image selectedColorImage; // 추가: 선택된 색상을 표시할 Image UI 요소
+    
+    //확대축소를 위한 크기 변수
+    public float gridScale = 1.0f;
+
+    //스포이드 액티브 상태 불 변수와 버튼
+    private bool isSpoidActive = false;
+    public Button spoidButton;
+    public TMP_Text spoidButtonText;
+
     // 초기화, 유니티에서는 Awake로 초기화한다
     void Awake()
     {
@@ -47,13 +63,14 @@ public class PixelArtEditor : MonoBehaviour
             Color.white,
             Color.red,
             Color.blue,
-            Color.green
+            Color.green,
+            new Color(0,0,0,0) //투명
         };
     }
 
     void Start()
     {
-        PlayerPrefs.DeleteAll(); // 이 줄을 추가하여 PlayerPrefs를 초기화합니다.
+        PlayerPrefs.DeleteAll(); // 이 줄을 추가하여 PlayerPrefs를 초기화
         applyButton.onClick.AddListener(ApplyGridSize);
 
         // 저장 로드 클리어 버튼 추가
@@ -64,12 +81,21 @@ public class PixelArtEditor : MonoBehaviour
         // 로드시 이름
         loadButton.onClick.AddListener(() => LoadPixelArt(nameInput.text));
 
-
         // Export 버튼 클릭 이벤트 연결
         exportButton.onClick.AddListener(() => ExportPixelArt(nameInput.text)); 
    
+        // 색추가 버튼
+        addColorButton.onClick.AddListener(AddColor);
 
     }
+    
+    // 스포이드 버튼
+    public void OnSpoidButtonClicked()
+    {
+        isSpoidActive = !isSpoidActive; // 상태 토글
+        spoidButtonText.text = isSpoidActive ? "Click color!" : "Spoid";
+    }
+
 
     // 그리드 크기 적용 함수
     void ApplyGridSize()
@@ -77,6 +103,7 @@ public class PixelArtEditor : MonoBehaviour
         int width = int.Parse(widthInput.text);
         int height = int.Parse(heightInput.text);
         GenerateGrid(width, height);
+        ScaleGrid(gridScale);
     }
 
     // 그리드 생성 함수
@@ -165,7 +192,23 @@ public class PixelArtEditor : MonoBehaviour
     public void ChangeColor(Button pixel)
     {
         Image pixelImage = pixel.GetComponent<Image>();
-        pixelImage.color = selectedColor;
+        
+        // 스포이드가 활성화되어 있으면, 픽셀의 색상을 선택된 색상으로 설정
+        if (isSpoidActive)
+        {
+            selectedColor = pixelImage.color;
+            spoidButtonText.text = "Spoid";
+            isSpoidActive = false;
+            // 색상 옵션 배열에 새로운 색상을 추가합니다.
+            AddColorOption(selectedColor);
+            // 새로운 색상을 현재 선택된 색상으로 설정하고 UI에 반영
+            SelectColor(selectedColor);
+        }
+        // 그렇지 않으면, 선택된 색상을 픽셀의 색상으로 설정
+        else
+        {
+            pixelImage.color = selectedColor;
+        }
     }
 
     // 색상 선택 함수
@@ -296,26 +339,34 @@ public class PixelArtEditor : MonoBehaviour
         }
     }
 
-    private void ColorPixelUnderMouse()
+    
+private void ColorPixelUnderMouse()
+{
+    RectTransform canvasRect = grid.GetComponentInParent<Canvas>().GetComponent<RectTransform>();
+    Vector2 localMousePosition;
+    if (RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, Input.mousePosition, null, out localMousePosition))
     {
-        RectTransform canvasRect = grid.GetComponentInParent<Canvas>().GetComponent<RectTransform>();
-        Vector2 localMousePosition;
-        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, Input.mousePosition, null, out localMousePosition))
+        Vector2 anchoredPosition = grid.InverseTransformPoint(canvasRect.TransformPoint(localMousePosition));
+        for (int i = 0; i < grid.childCount; i++)
         {
-            Vector2 anchoredPosition = grid.InverseTransformPoint(canvasRect.TransformPoint(localMousePosition));
-            for (int i = 0; i < grid.childCount; i++)
+            RectTransform pixelRect = grid.GetChild(i).GetComponent<RectTransform>();
+            if (pixelRect.rect.Contains(anchoredPosition - pixelRect.anchoredPosition))
             {
-                RectTransform pixelRect = grid.GetChild(i).GetComponent<RectTransform>();
-                if (pixelRect.rect.Contains(anchoredPosition - pixelRect.anchoredPosition))
+                Button pixelButton = pixelRect.GetComponent<Button>();
+                
+                if (isSpoidActive)
                 {
-                    Button pixelButton = pixelRect.GetComponent<Button>();
+                    ChangeColor(pixelButton);
+                }
+                else
+                {
                     ChangeColor(pixelButton);
                     break;
                 }
             }
         }
     }
-
+}
 
     // 로드
     public void LoadPixelArt(string pixelArtName)
@@ -409,7 +460,8 @@ public class PixelArtEditor : MonoBehaviour
             for (int x = 0; x < data.width; x++)
             {
                 int colorIndex = y * data.width + x;
-                texture.SetPixel(x, y, data.colors[colorIndex]);
+                //뒤집힘 문제 해결
+                texture.SetPixel(x, data.height - y - 1, data.colors[colorIndex]);
             }
         }
 
@@ -431,6 +483,71 @@ public class PixelArtEditor : MonoBehaviour
         Debug.Log("Pixel Art exported!");
     }
 
+    //색 추가 기능
+    private void AddColor()
+    {
+        if (float.TryParse(rInputField.text, out float r) &&
+            float.TryParse(gInputField.text, out float g) &&
+            float.TryParse(bInputField.text, out float b))
+        {
+            // RGB 값을 0~1 사이의 값으로 정규화합니다.
+            r = Mathf.Clamp01(r / 255f);
+            g = Mathf.Clamp01(g / 255f);
+            b = Mathf.Clamp01(b / 255f);
+
+            // 새로운 색상을 생성합니다.
+            Color newColor = new Color(r, g, b);
+            
+            // 색상 옵션 배열에 새로운 색상을 추가합니다.
+            AddColorOption(newColor);
+
+            // 추가: 새로운 색상을 현재 선택된 색상으로 설정하고 UI에 반영
+            SelectColor(newColor);
+        }
+        else
+        {
+            Debug.LogWarning("Invalid RGB input.");
+        }
+    }
+
+    private void AddColorOption(Color newColor)
+    {
+        // 새로운 색상 옵션 배열을 생성하고, 기존 색상들을 복사합니다.
+        Color[] newColorOptions = new Color[colorOptions.Length + 1];
+        for (int i = 0; i < colorOptions.Length; i++)
+        {
+            newColorOptions[i] = colorOptions[i];
+        }
+
+        // 새로운 색상을 추가합니다.
+        newColorOptions[newColorOptions.Length - 1] = newColor;
+
+        // 색상 옵션 배열을 갱신합니다.
+        colorOptions = newColorOptions;
+    }
+
+    // 추가: 새로운 메서드. 선택된 색상을 저장하고 UI에 반영
+    private void SelectColor(Color color)
+    {
+        selectedColor = color;
+        selectedColorImage.color = color;
+    }
+
+    //확대축소 기능
+    public void ScaleGrid(float scalingFactor)
+    {
+        gridScale *= scalingFactor;
+    }
+
+    public void OnZoomInButtonClicked()
+    {
+        ScaleGrid(1.1f);  // Zoom in by 10%
+    }
+
+    public void OnZoomOutButtonClicked()
+    {
+        ScaleGrid(0.9f);  // Zoom out by 10%
+    }
 
 
 }
