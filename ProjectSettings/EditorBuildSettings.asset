@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/SystemScene/IntroScreen.unity
+    guid: 3ddcfdd994123a84cbf84427fed31a2f
+  - enabled: 1
     path: Assets/Scenes/PixelArtEditor/PixelArtEditor.unity
     guid: de8b6bd9e3702f649a798c6b844520ae
   - enabled: 1
@@ -24,6 +27,6 @@ EditorBuildSettings:
     path: Assets/Scenes/Community/CreatePost.unity
     guid: 76b235b749afba04e93932727411540a
   - enabled: 1
-    path: Assets/Scenes/Game_JumpObs/Game.unity
-    guid: 0edb7d028f847412ebe49467906bddb0
+    path: Assets/Scenes/Game_OstJmp/Game.unity
+    guid: 2cda990e2423bbf4892e6590ba056729
   m_configObjects: {}

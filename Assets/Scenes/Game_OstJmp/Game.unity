@@ -151,7 +151,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 148270}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6, y: 0, z: 0}
+  m_LocalPosition: {x: -6, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -199,7 +199,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: 5d0487f55493d9d41838a0de12617713, type: 3}
+  m_Sprite: {fileID: -6447722072507503168, guid: 10f3cacccb0c4c547be76836eba20664, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -237,8 +237,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sprites:
-  - {fileID: 21300000, guid: 9138bd4196615a14a840d76bdc47f64b, type: 3}
-  - {fileID: 21300000, guid: 9dd7d801937e5a742a96b945cfa468ac, type: 3}
+  - {fileID: -2453208753318357113, guid: 10f3cacccb0c4c547be76836eba20664, type: 3}
+  - {fileID: 6348790710242686107, guid: 10f3cacccb0c4c547be76836eba20664, type: 3}
+  - {fileID: 5513914976837039818, guid: 10f3cacccb0c4c547be76836eba20664, type: 3}
+  - {fileID: -434675778434299504, guid: 10f3cacccb0c4c547be76836eba20664, type: 3}
 --- !u!143 &148278
 CharacterController:
   m_ObjectHideFlags: 0
@@ -417,7 +419,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 213346670}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 10, y: 0, z: 0}
+  m_LocalPosition: {x: 10, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -437,19 +439,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objects:
-  - prefab: {fileID: 3926917011630731405, guid: 00c1ce9438af28f4783bc30ca53b61b8, type: 3}
+  - prefab: {fileID: 3926917011630731405, guid: 325d1fac6fd9f40d1bd2ff497386fd36, type: 3}
     spawnChance: 0.2
-  - prefab: {fileID: 9111235999010403720, guid: ce7211bb8f2860f41b8a7e7395de2c5b, type: 3}
+  - prefab: {fileID: 9111235999010403720, guid: d1af9ca01f8a0408797d452a1db5a387, type: 3}
     spawnChance: 0.18
-  - prefab: {fileID: 6584594803541806543, guid: 7d999cb4481defb4ba29fbe44d1f4ce0, type: 3}
+  - prefab: {fileID: 6584594803541806543, guid: daa0ddb0e99aa416bbe96dfb82430e86, type: 3}
     spawnChance: 0.16
-  - prefab: {fileID: 3554295633068608032, guid: ad9ed36a50c4ba24eb1a3370c6703ba3, type: 3}
+  - prefab: {fileID: 3554295633068608032, guid: da2895f2ce383476498e678d981682e4, type: 3}
     spawnChance: 0.14
-  - prefab: {fileID: 2008811433931751997, guid: ff230da1cfce4db479376c551d41ee9a, type: 3}
+  - prefab: {fileID: 2008811433931751997, guid: 2adeb506bebae47af9e18c0860a8f7b4, type: 3}
     spawnChance: 0.12
-  - prefab: {fileID: 6134549672178375514, guid: b9eec0f7332e5054e948886e935541a4, type: 3}
+  - prefab: {fileID: 6134549672178375514, guid: 5bada6b158560498ea314735b339b993, type: 3}
     spawnChance: 0.1
-  - prefab: {fileID: 9020847862631447337, guid: 5dccca64ef3c58f4985065fd38779786, type: 3}
+  - prefab: {fileID: 9020847862631447337, guid: 394d4345e3d37417eb1207925226db47, type: 3}
     spawnChance: 0.05
   minSpawnRate: 1
   maxSpawnRate: 1.5
@@ -780,8 +782,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: -1.08, z: 0}
+  m_Size: {x: 1, y: 1.9918704, z: 1}
+  m_Center: {x: 0, y: -0.5840647, z: 0}
 --- !u!1 &808728476
 GameObject:
   m_ObjectHideFlags: 0
@@ -1137,7 +1139,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: e46bbbea9ac946d41b5267f9080ce8e7, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d1a27f0087da5f44a8bd6b809b4d4dc1, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
