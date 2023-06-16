@@ -46,8 +46,11 @@ public class AuthController : MonoBehaviour
     {
         if (ID is not null && PW is not null)
         {
-            signUp(ID.text.Trim(), PW.text.Trim());
-            //Debug.Log("SignUp : " + ID.text + " " + PW.text);
+            if (ID.text.Trim().Contains("@")) {
+                signUp(ID.text.Trim(), PW.text.Trim());
+                Debug.Log("SignUp : " + ID.text + " " + PW.text);
+            }
+            else res = "ID should have an email format.";
         }
         else
         {
@@ -61,8 +64,11 @@ public class AuthController : MonoBehaviour
     {
         if (ID is not null && PW is not null)
         {
-            signIn(ID.text.Trim(), PW.text.Trim());
-            //Debug.Log("SignIn : " + ID.text + " " + PW.text);
+            if (ID.text.Trim().Contains("@")) {
+                signIn(ID.text.Trim(), PW.text.Trim());
+                Debug.Log("SignIn : " + ID.text + " " + PW.text);
+            }
+            else res = "ID should have an email format.";
         }
         else
         {
