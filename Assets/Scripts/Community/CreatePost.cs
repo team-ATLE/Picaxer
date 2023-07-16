@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -43,10 +44,14 @@ public class CreatePost : MonoBehaviour
             Message.text = "No image selected";
             return;
         }
-        long id;
-        reference.Child("Post").GetValueAsync().ContinueWithOnMainThread(task => { 
+        long id = 0;
+        reference.Child("Post").LimitToLast(1).GetValueAsync().ContinueWithOnMainThread(task => { 
             if (task.IsCompleted) {
-                id = task.Result.ChildrenCount + 1;
+                foreach (DataSnapshot cur in task.Result.Children)
+                {
+                    id = long.Parse(cur.Key) + 1;
+                    Debug.Log(id);
+                }
 
                 // storage에 로컬 이미지 업로드
                 // File located on disk
@@ -67,19 +72,23 @@ public class CreatePost : MonoBehaviour
                         imageURL = imageRef.GetDownloadUrlAsync().Result.ToString();
                         Debug.Log(imageURL); // Download URL
 
-                        Post post = new Post(user.Email, imageURL, content);
+                        // Add date
+                        string dateTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+                        Post post = new Post(user.Email, imageURL, content, dateTime);
                         string json = JsonUtility.ToJson(post);
                         reference.Child("Post").Child(id.ToString()).SetRawJsonValueAsync(json);
 
                         Debug.Log("Upload complete");
                     }
                 });
-
                 StartCoroutine(UploadWait());
             }
+            else {
+                foreach (var e in task.Exception.Flatten().InnerExceptions) {
+                    Debug.LogWarning($"Received Exception: {e.Message}");
+                }
+            }
         });
-
-        
     }
 
     IEnumerator UploadWait() 

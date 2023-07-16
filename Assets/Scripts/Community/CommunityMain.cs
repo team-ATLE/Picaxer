@@ -26,7 +26,8 @@ public class CommunityMain : MonoBehaviour
     ScrollRect scrollRect;
     public TMP_Text Message;
 
-    DataSnapshot posts;
+    DataSnapshot data;
+    List<Post> posts;
     long size = 0; // 전체 posts 사이즈
     long currSize = 0; // 현재 posts 페이지의 최대 사이즈
 
@@ -50,11 +51,22 @@ public class CommunityMain : MonoBehaviour
 
         reference.Child("Post").GetValueAsync().ContinueWithOnMainThread(task => {
             if (task.IsCompleted) {
-                posts = task.Result;
-                size = posts.ChildrenCount; // 추후 size는 고정으로 변경
-                Debug.Log(posts);
-                Debug.Log(size);
+                data = task.Result;
+                size = data.ChildrenCount;
                 
+                // Convert into List
+                posts = new List<Post>();
+                foreach (DataSnapshot cur in data.Children)
+                {
+                    Post curPost = new Post(
+                        cur.Child("email").Value.ToString(), 
+                        cur.Child("imageURL").Value.ToString(), 
+                        cur.Child("content").Value.ToString(), 
+                        cur.Child("dateTime").Value.ToString()
+                    );
+                    posts.Add(curPost);
+                }
+                posts.Reverse();
                 PrintRawImage(); 
             }
         });
@@ -69,14 +81,13 @@ public class CommunityMain : MonoBehaviour
         }
         
         int i = 0;
-        foreach (DataSnapshot post in posts.Children)
+        foreach (Post post in posts)
         {
             if (i >= size) break;
             GameObject button = Instantiate(buttonPrefab, contentPanel);
-
             RawImage img = button.GetComponentInChildren<RawImage>();
-            StartCoroutine(ImageLoad(img, post.Child("imageURL").Value.ToString()));
-            button.GetComponentInChildren<TMP_Text>().text = post.Child("content").Value.ToString();
+            StartCoroutine(ImageLoad(img, post.imageURL));
+            button.GetComponentInChildren<TMP_Text>().text = post.content + "\n" + post.dateTime;
             i++;
         }
     }
