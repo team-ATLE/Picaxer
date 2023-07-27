@@ -28,8 +28,8 @@ public class CommunityMain : MonoBehaviour
 
     DataSnapshot data;
     List<Post> posts;
-    long size = 0; // 전체 posts 사이즈
-    long currSize = 0; // 현재 posts 페이지의 최대 사이즈
+    int size = 20; // 페이지별 포스트 개수
+    int currSize = 0; // 현재 페이지의 첫 번째 포스트
 
     void Start()
     {
@@ -52,7 +52,6 @@ public class CommunityMain : MonoBehaviour
         reference.Child("Post").GetValueAsync().ContinueWithOnMainThread(task => {
             if (task.IsCompleted) {
                 data = task.Result;
-                size = data.ChildrenCount;
                 
                 // Convert into List
                 posts = new List<Post>();
@@ -80,15 +79,13 @@ public class CommunityMain : MonoBehaviour
             Destroy(child.gameObject);
         }
         
-        int i = 0;
-        foreach (Post post in posts)
+        for (int i = currSize; i < size + currSize; i++)
         {
-            if (i >= size) break;
+            if (i >= posts.Count) break;
             GameObject button = Instantiate(buttonPrefab, contentPanel);
             RawImage img = button.GetComponentInChildren<RawImage>();
-            StartCoroutine(ImageLoad(img, post.imageURL));
-            button.GetComponentInChildren<TMP_Text>().text = post.content + "\n" + post.dateTime;
-            i++;
+            StartCoroutine(ImageLoad(img, posts[i].imageURL));
+            button.GetComponentInChildren<TMP_Text>().text = posts[i].content + "\n" + posts[i].email + "\n" + posts[i].dateTime;
         }
     }
 
@@ -119,14 +116,16 @@ public class CommunityMain : MonoBehaviour
 
     void Prev()
     {
+        if (currSize - size < 0) return;
         PrintRawImage();
-        currSize -= 15;
+        currSize -= 1;
     }
 
     void Next()
     {
+        if (currSize + size >= posts.Count) return;
         PrintRawImage();
-        currSize += 15;
+        currSize += 1;
     }
 
     public void BackClick()
