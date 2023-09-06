@@ -1,4 +1,5 @@
 public class Post {
+    public string id;
     public string email;
     public string imageURL;
     public string content;
@@ -7,7 +8,8 @@ public class Post {
     public Post() {
     }
 
-    public Post(string email, string imageURL, string content, string dateTime) {
+    public Post(string id, string email, string imageURL, string content, string dateTime) {
+        this.id = id;
         this.email = email;
         this.imageURL = imageURL;
         this.content = content;

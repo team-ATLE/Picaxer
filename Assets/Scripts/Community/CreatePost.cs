@@ -74,7 +74,7 @@ public class CreatePost : MonoBehaviour
 
                         // Add date
                         string dateTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
-                        Post post = new Post(user.Email, imageURL, content, dateTime);
+                        Post post = new Post(id.ToString(), user.Email, imageURL, content, dateTime);
                         string json = JsonUtility.ToJson(post);
                         reference.Child("Post").Child(id.ToString()).SetRawJsonValueAsync(json);
 
@@ -93,7 +93,7 @@ public class CreatePost : MonoBehaviour
 
     IEnumerator UploadWait() 
     {
-        yield return new WaitForSeconds(7.0f);
+        yield return new WaitForSeconds(5.0f);
         SceneManager.LoadScene("CommunityMain");
     }
 
