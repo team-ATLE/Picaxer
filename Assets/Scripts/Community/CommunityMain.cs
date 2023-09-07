@@ -28,8 +28,9 @@ public class CommunityMain : MonoBehaviour
 
     DataSnapshot data;
     List<Post> posts;
-    long size = 0; // 전체 posts 사이즈
-    long currSize = 0; // 현재 posts 페이지의 최대 사이즈
+    Dictionary<string, long> likes;
+    int size = 3; // 페이지별 포스트 개수
+    int currSize = 0; // 현재 페이지의 첫 번째 포스트
 
     void Start()
     {
@@ -44,35 +45,62 @@ public class CommunityMain : MonoBehaviour
         }
         
         scrollRect = GameObject.Find("Scroll View").GetComponent<ScrollRect>();
+        likes = new Dictionary<string, long>();
 
         // databasereference 전체 post 가져오는 부분
         reference = FirebaseDatabase.DefaultInstance.RootReference;
-        
-
         reference.Child("Post").GetValueAsync().ContinueWithOnMainThread(task => {
             if (task.IsCompleted) {
                 data = task.Result;
-                size = data.ChildrenCount;
                 
                 // Convert into List
                 posts = new List<Post>();
                 foreach (DataSnapshot cur in data.Children)
                 {
                     Post curPost = new Post(
+                        cur.Child("id").Value.ToString(),
                         cur.Child("email").Value.ToString(), 
                         cur.Child("imageURL").Value.ToString(), 
                         cur.Child("content").Value.ToString(), 
                         cur.Child("dateTime").Value.ToString()
                     );
                     posts.Add(curPost);
+                    likes.Add(curPost.id, 0);
+                    reference.Child("Like").OrderByChild("post").EqualTo(long.Parse(curPost.id)).ValueChanged += LikeValueChanged;
                 }
                 posts.Reverse();
-                PrintRawImage(); 
             }
         });
     }
 
-    void PrintRawImage() 
+    void LikeValueChanged(object sender, ValueChangedEventArgs args)
+    {
+        if (args.DatabaseError != null)
+        {
+            Debug.LogError(args.DatabaseError.Message);
+            return;
+        }
+
+        DataSnapshot data2 = args.Snapshot;
+        Debug.Log("LikeValueChanged");
+        if (data2 != null)
+        {
+            // find if the user likes ith post
+            foreach (DataSnapshot cur in data2.Children)
+            {
+                likes[cur.Child("post").Value.ToString()] = data2.ChildrenCount;
+                if (user.Email == cur.Child("user").Value.ToString())
+                {
+                    Debug.Log("True");
+                    // button.GetComponentInChildren<Image>();
+                    break;
+                }
+            }
+            Print();
+        }
+    }
+
+    void Print() 
     {
         // Clear all existing buttons
         foreach (Transform child in contentPanel)
@@ -80,18 +108,17 @@ public class CommunityMain : MonoBehaviour
             Destroy(child.gameObject);
         }
         
-        int i = 0;
-        foreach (Post post in posts)
+        for (int i = currSize; i < size + currSize; i++)
         {
-            if (i >= size) break;
-            GameObject button = Instantiate(buttonPrefab, contentPanel);
-            RawImage img = button.GetComponentInChildren<RawImage>();
-            StartCoroutine(ImageLoad(img, post.imageURL));
-            button.GetComponentInChildren<TMP_Text>().text = post.content + "\n" + post.dateTime;
-            i++;
+            if (i >= posts.Count) break;
+            GameObject content = Instantiate(buttonPrefab, contentPanel);
+            RawImage img = content.GetComponentInChildren<RawImage>();
+            StartCoroutine(ImageLoad(img, posts[i].imageURL));
+            content.GetComponentInChildren<TMP_Text>().text = posts[i].id + "\n" + posts[i].content + "\n" + posts[i].email + "\n" + posts[i].dateTime + "\n" + likes[posts[i].id];
+            string post_id = posts[i].id;
+            content.GetComponentInChildren<Button>().onClick.AddListener(() => UpdateLike(post_id));
         }
     }
-
 
     IEnumerator ImageLoad(RawImage img, string MediaUrl)
     {
@@ -109,24 +136,58 @@ public class CommunityMain : MonoBehaviour
 
     public void PrevClick()
     {
-        Prev();
+        if (currSize - size < 0) return;
+        Debug.Log(currSize);
+        currSize -= size;
+        Print();
     }
 
     public void NextClick()
     {
-        Next();
+        if (currSize + size >= posts.Count) return;
+        Debug.Log(currSize);
+        currSize += size;
+        Print();
     }
 
-    void Prev()
+    void UpdateLike(string id) 
     {
-        PrintRawImage();
-        currSize -= 15;
-    }
+        Debug.Log(id + " like click");
+        string key = "";
+        Dictionary<string, object> values = new Dictionary<string, object>();
+        values["user"] = user.Email;
+        values["post"] = long.Parse(id);
+        Dictionary<string, object> childUpdates = new Dictionary<string, object>();
+        
 
-    void Next()
-    {
-        PrintRawImage();
-        currSize += 15;
+        reference.Child("Like").OrderByChild("post").EqualTo(long.Parse(id)).GetValueAsync().ContinueWithOnMainThread(task => {
+            if (task.IsCompleted) {
+                Debug.Log(task.Result);
+                Debug.Log(task.Result.ChildrenCount);
+                if (task.Result.ChildrenCount != 0) {
+                    // delete
+                    Debug.Log("Executed1");
+                    foreach (var cur in task.Result.Children)
+                    {
+                        key = cur.Key;
+                        Debug.Log(cur.Child("user").Value.ToString());
+                        likes[cur.Child("post").Value.ToString()] -= 1;
+                    }
+                    childUpdates["/Like/" + key] = null;
+                    Debug.Log("Executed2");
+                }
+                else {
+                    Debug.Log("Executed3");
+                    // insert
+                    key = reference.Child("Like").Push().Key;
+                    childUpdates["/Like/" + key] = values;
+                    
+                    Debug.Log("Executed4");
+                }
+                reference.UpdateChildrenAsync(childUpdates);
+                Debug.Log("Executed5");
+            }
+        });
     }
 
     public void BackClick()
