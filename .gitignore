@@ -69,4 +69,6 @@ google-services*.*
 # etc
 Images
 firebase_unity_sdk
-Assets/Scripts/Community/CommunityDAO.cs
+Assets/GoogleService-Info.plist
+Assets/GoogleService-Info.plist.meta
+UserSettings/EditorUserSettings.asset

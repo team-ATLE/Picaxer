@@ -9,9 +9,6 @@ EditorBuildSettings:
     path: Assets/Scenes/PixelArtEditor/PixelArtEditor.unity
     guid: de8b6bd9e3702f649a798c6b844520ae
   - enabled: 1
-    path: Assets/Scenes/Exporter.unity
-    guid: ea88383f967fef24594662fc3da56043
-  - enabled: 1
     path: Assets/Scenes/Main/Main.unity
     guid: 8850614e4bbc6c74c9b05a77c59ae972
   - enabled: 1
@@ -26,4 +23,16 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Community/CreatePost.unity
     guid: 76b235b749afba04e93932727411540a
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000
+  - enabled: 1
+    path: Assets/Scenes/Game_worm/Loading.unity
+    guid: c713f00d0b2054ae1bce3619fdfebc9c
+  - enabled: 1
+    path: Assets/Scenes/Game_worm/MainMenu.unity
+    guid: a6eb5d5326b9b4f7aa46419bf2959ce1
+  - enabled: 1
+    path: Assets/Scenes/Game_worm/GameScene.unity
+    guid: 239316e5ea527c54aa0e54c75b6c6d66
   m_configObjects: {}

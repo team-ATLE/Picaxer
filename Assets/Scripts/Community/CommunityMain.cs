@@ -21,11 +21,13 @@ public class CommunityMain : MonoBehaviour
     FirebaseStorage storage;
     StorageReference storageReference;
 
+    public GameObject buttonPrefab;
+    public Transform contentPanel;
     ScrollRect scrollRect;
     public TMP_Text Message;
 
     DataSnapshot posts;
-    long size; // 전체 posts 사이즈
+    long size = 0; // 전체 posts 사이즈
     long currSize = 0; // 현재 posts 페이지의 최대 사이즈
 
     void Start()
@@ -60,14 +62,21 @@ public class CommunityMain : MonoBehaviour
 
     void PrintRawImage() 
     {
+        // Clear all existing buttons
+        foreach (Transform child in contentPanel)
+        {
+            Destroy(child.gameObject);
+        }
+        
         int i = 0;
         foreach (DataSnapshot post in posts.Children)
         {
             if (i >= size) break;
-            RawImage img = scrollRect.content.GetChild(i).GetChild(0).GetComponent<RawImage>();
-            TMP_Text text = scrollRect.content.GetChild(i).GetChild(1).GetComponent<TMP_Text>();
+            GameObject button = Instantiate(buttonPrefab, contentPanel);
+
+            RawImage img = button.GetComponentInChildren<RawImage>();
             StartCoroutine(ImageLoad(img, post.Child("imageURL").Value.ToString()));
-            text.text = post.Child("content").Value.ToString();
+            button.GetComponentInChildren<TMP_Text>().text = post.Child("content").Value.ToString();
             i++;
         }
     }

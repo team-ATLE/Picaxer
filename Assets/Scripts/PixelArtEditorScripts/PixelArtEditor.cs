@@ -374,44 +374,50 @@ public class PixelArtEditor : MonoBehaviour
     }
 
     
-    // Pixel Art를 PNG Export하는 함수
+    // Pixel Art를 PNG Export하는 함수 
+    // json에서 직접 만들자
     public void ExportPixelArt(string pixelArtName)
     {
         if (string.IsNullOrEmpty(pixelArtName))
         {
-            Debug.LogError("No file name provided.");
+            Debug.LogError("파일명을 입력하세요.");
             return;
         }
 
-        // 그리드 캡쳐를 위한 RenderTexture 생성
-        
-        int width = Mathf.RoundToInt(grid.rect.width);
-        int height = Mathf.RoundToInt(grid.rect.height);
-        RenderTexture renderTexture = new RenderTexture(width, height, 0, RenderTextureFormat.ARGB32);
-        renderTexture.antiAliasing = 8;
+        string filePath = Path.Combine(Application.dataPath, "SavedPixelArts", pixelArtName + ".json");
 
+        if (!File.Exists(filePath))
+        {
+            Debug.LogWarning("픽셀 아트 데이터가 존재하지 않습니다. 로드를 스킵합니다.");
+            return;
+        }
 
-        // 캔버스를 RenderTexture에 렌더링
-        CanvasRenderer renderer = grid.GetComponent<CanvasRenderer>();
-        renderer.SetMaterial(new Material(Shader.Find("Unlit/Texture")), Texture2D.whiteTexture);
-        renderer.SetTexture(renderTexture);
+        string jsonData = File.ReadAllText(filePath);
+        PixelArtData data = JsonUtility.FromJson<PixelArtData>(jsonData);
 
-        // 현재 RenderTexture를 활성화
-        RenderTexture currentActiveRT = RenderTexture.active;
-        RenderTexture.active = renderTexture;
+        if (data == null)
+        {
+            Debug.LogWarning("픽셀 아트 데이터가 존재하지 않습니다. 로드를 스킵합니다.");
+            return;
+        }
 
-        // 화면을 캡쳐하여 새 Texture2D에 저장
-        Texture2D texture = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.ARGB32, false);
-        texture.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
+        // Create a new texture with the dimensions of the PixelArtData
+        Texture2D texture = new Texture2D(data.width, data.height);
+
+        for (int y = 0; y < data.height; y++)
+        {
+            for (int x = 0; x < data.width; x++)
+            {
+                int colorIndex = y * data.width + x;
+                texture.SetPixel(x, y, data.colors[colorIndex]);
+            }
+        }
+
         texture.Apply();
 
-        // 원래의 RenderTexture를 활성화
-        RenderTexture.active = currentActiveRT;
-
-        // 캡쳐된 텍스쳐를 PNG로 변환
         byte[] bytes = texture.EncodeToPNG();
 
-        // ExportedPng 디렉토리 생성
+        // 디렉토리에 png 파일 세이브
         string directoryPath = Path.Combine(Application.dataPath, "ExportedPng");
 
         if (!Directory.Exists(directoryPath))
@@ -419,9 +425,8 @@ public class PixelArtEditor : MonoBehaviour
             Directory.CreateDirectory(directoryPath);
         }
 
-        // PNG 파일 저장
-        string filePath = Path.Combine(directoryPath, pixelArtName + ".png");
-        File.WriteAllBytes(filePath, bytes);
+        string exportPath = Path.Combine(directoryPath, pixelArtName + ".png");
+        File.WriteAllBytes(exportPath, bytes);
 
         Debug.Log("Pixel Art exported!");
     }
