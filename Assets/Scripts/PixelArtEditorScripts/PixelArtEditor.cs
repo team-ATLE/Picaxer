@@ -209,6 +209,11 @@ public class PixelArtEditor : MonoBehaviour
         {
             pixelImage.color = selectedColor;
         }
+
+        // 색상번호 표시
+        rInputField.text = $"{selectedColor.r*255:0}";
+        gInputField.text = $"{selectedColor.g*255:0}";
+        bInputField.text = $"{selectedColor.b*255:0}";
     }
 
     // 색상 선택 함수
@@ -218,6 +223,10 @@ public class PixelArtEditor : MonoBehaviour
         {
             selectedColor = colorOptions[colorIndex];
         }
+        
+        rInputField.text = $"{selectedColor.r*255:0}";
+        gInputField.text = $"{selectedColor.g*255:0}";
+        bInputField.text = $"{selectedColor.b*255:0}";
     }
 
     // 그리드의 색상 정보를 가져오는 함수
@@ -405,6 +414,9 @@ private void ColorPixelUnderMouse()
         widthInput.text = data.width.ToString();
         heightInput.text = data.height.ToString();
 
+        // 로드된 픽셀 아트의 이름을 입력 필드에 설정
+        nameInput.text = pixelArtName;
+
         int i = 0;
         int numberOfPixels = grid.childCount;
         int numberOfColors = data.colors.Count;
@@ -531,6 +543,15 @@ private void ColorPixelUnderMouse()
     {
         selectedColor = color;
         selectedColorImage.color = color;
+        
+        float red = selectedColor.r;
+        float green = selectedColor.g;
+        float blue = selectedColor.b;
+        float alpha = selectedColor.a;
+        rInputField.text = $"{red:0}";
+        gInputField.text = $"{green:0}";
+        bInputField.text = $"{blue:0}";
+
     }
 
     //확대축소 기능
