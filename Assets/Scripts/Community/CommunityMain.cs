@@ -49,12 +49,45 @@ public class CommunityMain : MonoBehaviour
 
         // databasereference 전체 post 가져오는 부분
         reference = FirebaseDatabase.DefaultInstance.RootReference;
+        GetRecent();
+    }
+
+    void GetRecent()
+    {
         reference.Child("Post").GetValueAsync().ContinueWithOnMainThread(task => {
             if (task.IsCompleted) {
                 data = task.Result;
                 
                 // Convert into List
                 posts = new List<Post>();
+                likes = new Dictionary<string, long>();
+                foreach (DataSnapshot cur in data.Children)
+                {
+                    Post curPost = new Post(
+                        cur.Child("id").Value.ToString(),
+                        cur.Child("email").Value.ToString(), 
+                        cur.Child("imageURL").Value.ToString(), 
+                        cur.Child("content").Value.ToString(), 
+                        cur.Child("dateTime").Value.ToString()
+                    );
+                    posts.Add(curPost);
+                    likes.Add(curPost.id, 0);
+                    reference.Child("Like").OrderByChild("post").EqualTo(long.Parse(curPost.id)).ValueChanged += LikeValueChanged;
+                }
+                posts.Reverse();
+            }
+        });
+    }
+
+    void GetPopular()
+    {
+        reference.Child("Post").OrderByChild("like_counts").GetValueAsync().ContinueWithOnMainThread(task => {
+            if (task.IsCompleted) {
+                data = task.Result;
+                
+                // Convert into List
+                posts = new List<Post>();
+                likes = new Dictionary<string, long>();
                 foreach (DataSnapshot cur in data.Children)
                 {
                     Post curPost = new Post(
@@ -162,30 +195,27 @@ public class CommunityMain : MonoBehaviour
 
         reference.Child("Like").OrderByChild("post").EqualTo(long.Parse(id)).GetValueAsync().ContinueWithOnMainThread(task => {
             if (task.IsCompleted) {
-                Debug.Log(task.Result);
-                Debug.Log(task.Result.ChildrenCount);
-                if (task.Result.ChildrenCount != 0) {
-                    // delete
-                    Debug.Log("Executed1");
-                    foreach (var cur in task.Result.Children)
+                foreach (var cur in task.Result.Children)
+                {
+                    key = cur.Key;
+                    Debug.Log(cur.Child("user").Value.ToString());
+                    if (cur.Child("user").Value.ToString() == user.Email)
                     {
-                        key = cur.Key;
-                        Debug.Log(cur.Child("user").Value.ToString());
-                        likes[cur.Child("post").Value.ToString()] -= 1;
+                        // delete
+                        childUpdates["/Like/" + key] = null;
+                        childUpdates["/Post/" + id + "/like_counts/"] = likes[id] - 1;
+                        likes[id] -= 1;
+                        reference.UpdateChildrenAsync(childUpdates);
+                        return;
                     }
-                    childUpdates["/Like/" + key] = null;
-                    Debug.Log("Executed2");
                 }
-                else {
-                    Debug.Log("Executed3");
-                    // insert
-                    key = reference.Child("Like").Push().Key;
-                    childUpdates["/Like/" + key] = values;
-                    
-                    Debug.Log("Executed4");
-                }
+
+                // insert
+                key = reference.Child("Like").Push().Key;
+                childUpdates["/Like/" + key] = values;
+                childUpdates["/Post/" + id + "/like_counts/"] = likes[id] + 1;
+                likes[id] += 1;
                 reference.UpdateChildrenAsync(childUpdates);
-                Debug.Log("Executed5");
             }
         });
     }
@@ -198,5 +228,15 @@ public class CommunityMain : MonoBehaviour
     public void NewPostClick()
     {
         SceneManager.LoadScene("CreatePost");
+    }
+
+    public void RecentClick()
+    {
+        GetRecent();
+    }
+
+    public void PopularClick()
+    {
+        GetPopular();
     }
 }

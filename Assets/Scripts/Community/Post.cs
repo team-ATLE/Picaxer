@@ -4,6 +4,7 @@ public class Post {
     public string imageURL;
     public string content;
     public string dateTime;
+    public long like_counts = 0;
 
     public Post() {
     }
