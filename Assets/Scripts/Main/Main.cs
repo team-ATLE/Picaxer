@@ -17,7 +17,7 @@ public class Main : MonoBehaviour
         auth = FirebaseAuth.DefaultInstance;
         user = auth.CurrentUser;
         if (user != null) {
-            Message.text = "Hello, your name is " + user.DisplayName + " and your email is " + user.Email;
+            Message.text = "Hello, " + user.DisplayName + "!\nEmail : " + user.Email;
         }
         else {
             Message.text = "No user.";
