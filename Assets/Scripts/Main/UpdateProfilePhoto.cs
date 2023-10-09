@@ -37,7 +37,6 @@ public class UpdateProfilePhoto : MonoBehaviour
         reference = FirebaseDatabase.DefaultInstance.RootReference;
         CommunityDAO dao = new CommunityDAO();
         storageReference = FirebaseStorage.DefaultInstance.GetReferenceFromUrl(dao.getReferenceURL());
-        Debug.Log(dao.getReferenceURL());
         Message.text = "You selected: " + imageName;
     }
     
@@ -56,13 +55,11 @@ public class UpdateProfilePhoto : MonoBehaviour
                 Debug.Log(task.Exception.ToString());
             }
             else {
-                Debug.Log("Finished uploading...");
+                Message.text = "Finish uploading...";
 
                 // Change imageURL to result download URL.
                 Photo_url = imageRef.GetDownloadUrlAsync().Result;
-                Debug.Log(Photo_url); // Download URL
 
-                Debug.Log("Upload complete");
 
                 // update user profile
                 Firebase.Auth.UserProfile profile = new Firebase.Auth.UserProfile {
@@ -79,8 +76,6 @@ public class UpdateProfilePhoto : MonoBehaviour
                         Debug.LogError("UpdateUserProfileAsync has error: " + task.Exception);
                         return;
                     }
-
-                    Message.text = "User profile updated successfully.";
                 });
             }
         });
@@ -89,7 +84,7 @@ public class UpdateProfilePhoto : MonoBehaviour
 
     IEnumerator UploadWait() 
     {
-        yield return new WaitForSeconds(5.0f);
+        yield return new WaitForSeconds(3.0f);
         SceneManager.LoadScene("Profile");
     }
 

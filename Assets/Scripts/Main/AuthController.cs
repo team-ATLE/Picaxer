@@ -24,6 +24,7 @@ public class AuthController : MonoBehaviour
 {
     public TMP_InputField ID;
     public TMP_InputField PW;
+    public TMP_InputField Name;
     public TMP_Text Message;
     string res;
     FirebaseAuth auth;
@@ -49,17 +50,17 @@ public class AuthController : MonoBehaviour
 
     public void SignUpClick()
     {
-        if (ID is not null && PW is not null)
+        if (ID is not null && PW is not null && Name is not null)
         {
             if (ID.text.Trim().Contains("@")) {
-                signUp(ID.text.Trim(), PW.text.Trim());
+                signUp(ID.text.Trim(), PW.text.Trim(), Name.text.Trim());
                 Debug.Log("SignUp : " + ID.text + " " + PW.text);
             }
             else Message.text = "ID should have an email format.";
         }
         else
         {
-            Message.text = "Complete both email and password.";
+            Message.text = "Complete all blanks.";
         }
         
     }
@@ -80,21 +81,40 @@ public class AuthController : MonoBehaviour
         }
     }
 
-    void signUp(string email, string password)
+    void signUp(string email, string password, string name)
     {
         auth.CreateUserWithEmailAndPasswordAsync(email, password).ContinueWithOnMainThread(
              task => {
                 if (!task.IsCanceled && !task.IsFaulted)
                 {
-                    Message.text = email + " : Successfully joined";
+                    Firebase.Auth.FirebaseUser user = auth.CurrentUser;
+                    Firebase.Auth.UserProfile profile = new Firebase.Auth.UserProfile {
+                    DisplayName = name,
+                    PhotoUrl = user.PhotoUrl,
+                    };
+
+                    user.UpdateUserProfileAsync(profile).ContinueWith(task => {
+                        if (task.IsCanceled || task.IsFaulted) {
+                            SceneManager.LoadScene("SetName");
+                        }
+                        auth.SignOut();
+                        user.DeleteAsync();
+                    });
+                    StartCoroutine(UploadWait());
                 }
                 else
                 {
-                    Message.text = "Fail to join";
+                    Message.text = "Fail to join. Try again.";
                     return;
                 }
              }
          );
+    }
+
+    IEnumerator UploadWait() 
+    {
+        yield return new WaitForSeconds(1.5f);
+        SceneManager.LoadScene("Signin");
     }
 
     void signIn(string email, string password)
@@ -103,7 +123,8 @@ public class AuthController : MonoBehaviour
             task => {
                 if (task.IsCompleted && !task.IsFaulted && !task.IsCanceled)
                 {
-                    Message.text = email + " : Successfully logged in";
+                    Debug.Log(auth.CurrentUser.DisplayName);
+                    // if (auth.CurrentUser.DisplayName.Length == 0) SceneManager.LoadScene("SetName");
                     SceneManager.LoadScene("Main");
                 }
                 else
