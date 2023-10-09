@@ -30,22 +30,21 @@ public class UpdateProfilePhoto : MonoBehaviour
     {
         auth = FirebaseAuth.DefaultInstance;
         user = auth.CurrentUser;
+        if (user == null) {
+            SceneManager.LoadScene("SignIn");
+        }
+
         reference = FirebaseDatabase.DefaultInstance.RootReference;
         CommunityDAO dao = new CommunityDAO();
         storageReference = FirebaseStorage.DefaultInstance.GetReferenceFromUrl(dao.getReferenceURL());
         Debug.Log(dao.getReferenceURL());
-        Message.text = "ImageName: " + imageName;
+        Message.text = "You selected: " + imageName;
     }
     
     void Save()
     {
         if (imageName == "") {
             Message.text = "No image selected";
-            return;
-        }
-
-        if (user == null) {
-            Message.text = "You need to login first";
             return;
         }
 
@@ -97,7 +96,7 @@ public class UpdateProfilePhoto : MonoBehaviour
     public void UpdateImgURL(string name)
     {
         imageName = name;
-        Message.text = "ImageName: " + imageName;
+        Message.text = "You selected: " + imageName;
     }
 
     public void UploadClick() 

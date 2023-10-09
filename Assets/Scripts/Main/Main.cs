@@ -17,17 +17,14 @@ public class Main : MonoBehaviour
         auth = FirebaseAuth.DefaultInstance;
         user = auth.CurrentUser;
         if (user != null) {
-            Message.text = "Hello, " + user.DisplayName + "!\nEmail : " + user.Email;
+            if (user.DisplayName.Length > 0)
+                Message.text = "Hello, " + user.DisplayName + "!";
+            else
+                Message.text = "Hello!";
         }
         else {
-            Message.text = "No user.";
+            SceneManager.LoadScene("SignIn");
         }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     public void ProfileClick() {
@@ -37,6 +34,6 @@ public class Main : MonoBehaviour
     public void SignOutClick() {
         auth.SignOut();
         user.DeleteAsync();
-        SceneManager.LoadScene("Sign");
+        SceneManager.LoadScene("SignIn");
     }
 }

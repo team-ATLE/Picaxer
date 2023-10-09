@@ -26,7 +26,6 @@ public class CreatePost : MonoBehaviour
     public TMP_Text Content;
     public TMP_Text Message;
     
-    // Start is called before the first frame update
     void Start()
     {
         auth = FirebaseAuth.DefaultInstance;
@@ -35,7 +34,7 @@ public class CreatePost : MonoBehaviour
         CommunityDAO dao = new CommunityDAO();
         storageReference = FirebaseStorage.DefaultInstance.GetReferenceFromUrl(dao.getReferenceURL());
         Debug.Log(dao.getReferenceURL());
-        Message.text = "ImageName: " + imageName;
+        Message.text = "You selected: " + imageName;
     }
     
     void Create(string content)
@@ -100,7 +99,7 @@ public class CreatePost : MonoBehaviour
     public void UpdateImgURL(string name)
     {
         imageName = name;
-        Message.text = "ImageName: " + imageName;
+        Message.text = "You selected: " + imageName;
     }
 
     public void PostClick() 

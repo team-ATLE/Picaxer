@@ -108,6 +108,13 @@ public class ProfileEditor : MonoBehaviour
 
                 Message.text = "User profile updated successfully.";
             });
+            StartCoroutine(UploadWait());
         }
+    }
+
+    IEnumerator UploadWait() 
+    {
+        yield return new WaitForSeconds(2.0f);
+        SceneManager.LoadScene("Main");
     }
 }

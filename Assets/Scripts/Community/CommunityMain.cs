@@ -24,24 +24,20 @@ public class CommunityMain : MonoBehaviour
     public GameObject buttonPrefab;
     public Transform contentPanel;
     ScrollRect scrollRect;
-    public TMP_Text Message;
 
     DataSnapshot data;
     List<Post> posts;
     Dictionary<string, long> likes;
-    int size = 3; // 페이지별 포스트 개수
-    int currSize = 0; // 현재 페이지의 첫 번째 포스트
+    int size = 20; // number of posts per page
+    int currSize = 0; // first index of post in current page
 
     void Start()
     {
         auth = FirebaseAuth.DefaultInstance;
         user = auth.CurrentUser;
 
-        if (user != null) {
-            Message.text = "Hello, your name is " + user.DisplayName + " and your email is " + user.Email;
-        }
-        else {
-            Message.text = "You need to login first.";
+        if (user == null) {
+            SceneManager.LoadScene("SignIn");
         }
         
         scrollRect = GameObject.Find("Scroll View").GetComponent<ScrollRect>();
