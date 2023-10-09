@@ -21,6 +21,7 @@ public class CreatePost : MonoBehaviour
     Firebase.Auth.FirebaseUser user;
     DatabaseReference reference;
     StorageReference storageReference;
+    CommunityDAO dao;
     string imageURL;
     string imageName = "";
     public TMP_Text Content;
@@ -33,8 +34,8 @@ public class CreatePost : MonoBehaviour
         reference = FirebaseDatabase.DefaultInstance.RootReference;
         CommunityDAO dao = new CommunityDAO();
         storageReference = FirebaseStorage.DefaultInstance.GetReferenceFromUrl(dao.getReferenceURL());
-        Debug.Log(dao.getReferenceURL());
         Message.text = "You selected: " + imageName;
+        Debug.Log(user.DisplayName);
     }
     
     void Create(string content)
@@ -49,11 +50,9 @@ public class CreatePost : MonoBehaviour
                 foreach (DataSnapshot cur in task.Result.Children)
                 {
                     id = long.Parse(cur.Key) + 1;
-                    Debug.Log(id);
                 }
 
                 // storage에 로컬 이미지 업로드
-                // File located on disk
                 string localFile = "./Assets/ExportedPng/" + imageName + ".png", imageURL = id + ".png";
 
                 // Create a reference to the file you want to upload
@@ -65,19 +64,21 @@ public class CreatePost : MonoBehaviour
                         Debug.Log(task2.Exception.ToString());
                     }
                     else {
-                        Debug.Log("Finished uploading...");
+                        Debug.Log("Finish uploading...");
 
                         // Change imageURL to result download URL.
-                        imageURL = imageRef.GetDownloadUrlAsync().Result.ToString();
-                        Debug.Log(imageURL); // Download URL
+                        imageURL = imageRef.GetDownloadUrlAsync().Result.ToString(); // Download URL
+
+                        Debug.Log("DONE");
 
                         // Add date
                         string dateTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
-                        Post post = new Post(id.ToString(), user.Email, imageURL, content, dateTime);
+                        Post post = new Post(id.ToString(), user.DisplayName, user.Email, imageURL, content, dateTime);
                         string json = JsonUtility.ToJson(post);
                         reference.Child("Post").Child(id.ToString()).SetRawJsonValueAsync(json);
+                        Debug.Log("Complete");
 
-                        Debug.Log("Upload complete");
+                        Message.text = "Upload complete";
                     }
                 });
                 StartCoroutine(UploadWait());
