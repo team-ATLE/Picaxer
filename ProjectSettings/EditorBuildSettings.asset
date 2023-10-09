@@ -21,7 +21,7 @@ EditorBuildSettings:
     path: Assets/Scenes/Main/Profile.unity
     guid: 9050d19b77565034788d1bd5179fe094
   - enabled: 1
-    path: Assets/Scenes/Main/Sign.unity
+    path: Assets/Scenes/Main/SignIn.unity
     guid: dfeb1d186029aa44d86d9d0cf2b7f535
   - enabled: 1
     path: Assets/Scenes/Community/CommunityMain.unity
@@ -35,4 +35,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Main/UploadProfilePhoto.unity
     guid: b921cbd301e81834381b12be93ce836c
+  - enabled: 1
+    path: Assets/Scenes/Main/SignUp.unity
+    guid: 4a89a8953053aba488918c816251c18d
   m_configObjects: {}

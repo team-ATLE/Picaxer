@@ -32,14 +32,19 @@ public class AuthController : MonoBehaviour
     {
         auth = FirebaseAuth.DefaultInstance;
         if (auth.CurrentUser != null)
-            res = auth.CurrentUser.DisplayName;
+            SceneManager.LoadScene("Main");
         else
-            res = "";
+            Message.text = "";
     }
 
-    private void FixedUpdate()
+    public void SignUpMoveClick()
     {
-        Message.text = res;
+        SceneManager.LoadScene("SignUp");
+    }
+
+    public void SignInMoveClick()
+    {
+        SceneManager.LoadScene("SignIn");
     }
 
     public void SignUpClick()
@@ -50,12 +55,11 @@ public class AuthController : MonoBehaviour
                 signUp(ID.text.Trim(), PW.text.Trim());
                 Debug.Log("SignUp : " + ID.text + " " + PW.text);
             }
-            else res = "ID should have an email format.";
+            else Message.text = "ID should have an email format.";
         }
         else
         {
-            res = "Complete both email and password.";
-            print(ID);
+            Message.text = "Complete both email and password.";
         }
         
     }
@@ -68,13 +72,12 @@ public class AuthController : MonoBehaviour
                 signIn(ID.text.Trim(), PW.text.Trim());
                 Debug.Log("SignIn : " + ID.text + " " + PW.text);
             }
-            else res = "ID should have an email format.";
+            else Message.text = "ID should have an email format.";
         }
         else
         {
-            res = "Complete both email and password.";
+            Message.text = "Complete both email and password.";
         }
-        Message.text = res;
     }
 
     void signUp(string email, string password)
@@ -83,11 +86,11 @@ public class AuthController : MonoBehaviour
              task => {
                 if (!task.IsCanceled && !task.IsFaulted)
                 {
-                    res = email + " : Successfully joined";
+                    Message.text = email + " : Successfully joined";
                 }
                 else
                 {
-                    res = "Fail to join";
+                    Message.text = "Fail to join";
                     return;
                 }
              }
@@ -100,12 +103,12 @@ public class AuthController : MonoBehaviour
             task => {
                 if (task.IsCompleted && !task.IsFaulted && !task.IsCanceled)
                 {
-                    res = email + " : Successfully logged in";
+                    Message.text = email + " : Successfully logged in";
                     SceneManager.LoadScene("Main");
                 }
                 else
                 {
-                    res = "Fail to login";               
+                    Message.text = "Login failed. Check your email and password again.";               
                 }
             }
         );
