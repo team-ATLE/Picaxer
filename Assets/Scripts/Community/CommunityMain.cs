@@ -24,24 +24,22 @@ public class CommunityMain : MonoBehaviour
     public GameObject buttonPrefab;
     public Transform contentPanel;
     ScrollRect scrollRect;
-    public TMP_Text Message;
+    RawImage full_heart;
+    RawImage empty_heart;
 
     DataSnapshot data;
     List<Post> posts;
     Dictionary<string, long> likes;
-    int size = 3; // 페이지별 포스트 개수
-    int currSize = 0; // 현재 페이지의 첫 번째 포스트
+    int size = 20; // number of posts per page
+    int currSize = 0; // first index of post in current page
 
     void Start()
     {
         auth = FirebaseAuth.DefaultInstance;
         user = auth.CurrentUser;
 
-        if (user != null) {
-            Message.text = "Hello, your name is " + user.DisplayName + " and your email is " + user.Email;
-        }
-        else {
-            Message.text = "You need to login first.";
+        if (user == null) {
+            SceneManager.LoadScene("SignIn");
         }
         
         scrollRect = GameObject.Find("Scroll View").GetComponent<ScrollRect>();
@@ -54,7 +52,7 @@ public class CommunityMain : MonoBehaviour
 
     void GetRecent()
     {
-        reference.Child("Post").GetValueAsync().ContinueWithOnMainThread(task => {
+        reference.Child("Post").OrderByChild("dateTime").GetValueAsync().ContinueWithOnMainThread(task => {
             if (task.IsCompleted) {
                 data = task.Result;
                 
@@ -63,8 +61,10 @@ public class CommunityMain : MonoBehaviour
                 likes = new Dictionary<string, long>();
                 foreach (DataSnapshot cur in data.Children)
                 {
+                    Debug.Log(cur.Child("id").Value.ToString());
                     Post curPost = new Post(
                         cur.Child("id").Value.ToString(),
+                        cur.Child("name").Value.ToString(),
                         cur.Child("email").Value.ToString(), 
                         cur.Child("imageURL").Value.ToString(), 
                         cur.Child("content").Value.ToString(), 
@@ -92,6 +92,7 @@ public class CommunityMain : MonoBehaviour
                 {
                     Post curPost = new Post(
                         cur.Child("id").Value.ToString(),
+                        cur.Child("name").Value.ToString(),
                         cur.Child("email").Value.ToString(), 
                         cur.Child("imageURL").Value.ToString(), 
                         cur.Child("content").Value.ToString(), 
@@ -115,19 +116,12 @@ public class CommunityMain : MonoBehaviour
         }
 
         DataSnapshot data2 = args.Snapshot;
-        Debug.Log("LikeValueChanged");
         if (data2 != null)
         {
             // find if the user likes ith post
             foreach (DataSnapshot cur in data2.Children)
             {
                 likes[cur.Child("post").Value.ToString()] = data2.ChildrenCount;
-                if (user.Email == cur.Child("user").Value.ToString())
-                {
-                    Debug.Log("True");
-                    // button.GetComponentInChildren<Image>();
-                    break;
-                }
             }
             Print();
         }
@@ -147,7 +141,11 @@ public class CommunityMain : MonoBehaviour
             GameObject content = Instantiate(buttonPrefab, contentPanel);
             RawImage img = content.GetComponentInChildren<RawImage>();
             StartCoroutine(ImageLoad(img, posts[i].imageURL));
-            content.GetComponentInChildren<TMP_Text>().text = posts[i].id + "\n" + posts[i].content + "\n" + posts[i].email + "\n" + posts[i].dateTime + "\n" + likes[posts[i].id];
+            TMP_Text[] text_content = content.GetComponentsInChildren<TMP_Text>();
+            text_content[0].text = posts[i].name;
+            text_content[1].text = posts[i].content;
+            text_content[2].text = posts[i].dateTime;
+            text_content[3].text = likes[posts[i].id].ToString();
             string post_id = posts[i].id;
             content.GetComponentInChildren<Button>().onClick.AddListener(() => UpdateLike(post_id));
         }
@@ -170,7 +168,6 @@ public class CommunityMain : MonoBehaviour
     public void PrevClick()
     {
         if (currSize - size < 0) return;
-        Debug.Log(currSize);
         currSize -= size;
         Print();
     }
@@ -178,14 +175,12 @@ public class CommunityMain : MonoBehaviour
     public void NextClick()
     {
         if (currSize + size >= posts.Count) return;
-        Debug.Log(currSize);
         currSize += size;
         Print();
     }
 
     void UpdateLike(string id) 
     {
-        Debug.Log(id + " like click");
         string key = "";
         Dictionary<string, object> values = new Dictionary<string, object>();
         values["user"] = user.Email;
@@ -198,7 +193,6 @@ public class CommunityMain : MonoBehaviour
                 foreach (var cur in task.Result.Children)
                 {
                     key = cur.Key;
-                    Debug.Log(cur.Child("user").Value.ToString());
                     if (cur.Child("user").Value.ToString() == user.Email)
                     {
                         // delete

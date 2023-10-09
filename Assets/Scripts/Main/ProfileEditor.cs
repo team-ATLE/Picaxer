@@ -21,7 +21,6 @@ public class ProfileEditor : MonoBehaviour
     public TMP_InputField Name;
     public System.Uri Photo_url;
     public TMP_Text Message;
-    string res;
     
     string imageName;
     
@@ -69,21 +68,15 @@ public class ProfileEditor : MonoBehaviour
         }
     }
 
-    void Update()
-    {
-        Message.text = res;
-    }
-
     public void SaveClick()
     {
         if (Name is not null)
         {
-            // storage에 이미지 저장
             Save(Name.text);
         }
         else
         {
-            res = "Field Name is empty.";
+            Message.text = "Name is empty.";
         }
         
     }
@@ -108,6 +101,13 @@ public class ProfileEditor : MonoBehaviour
 
                 Message.text = "User profile updated successfully.";
             });
+            StartCoroutine(UploadWait());
         }
+    }
+
+    IEnumerator UploadWait() 
+    {
+        yield return new WaitForSeconds(1.5f);
+        SceneManager.LoadScene("Main");
     }
 }
