@@ -11,6 +11,7 @@ using TMPro;
 using Firebase;
 using Firebase.Extensions;
 using Firebase.Auth;
+using Firebase.Database;
 using Firebase.Storage;
 using static CommunityDAO;
 
@@ -20,12 +21,16 @@ public class ProfileEditor : MonoBehaviour
     public TMP_Text Email;
     public TMP_InputField Name;
     public System.Uri Photo_url;
+    public TMP_Text Rank;
+    public TMP_Text Rank_dec;
+    public TMP_Text Score;
     public TMP_Text Message;
     
     string imageName;
     
     FirebaseAuth auth;
     Firebase.Auth.FirebaseUser user;
+    DatabaseReference reference;
     FirebaseStorage storage;
     StorageReference storageReference;
     RawImage photo;
@@ -46,12 +51,18 @@ public class ProfileEditor : MonoBehaviour
             Name.text = "";
         }
 
+
+        // Load profile photo
         CommunityDAO dao = new CommunityDAO();
         storageReference = FirebaseStorage.DefaultInstance.GetReferenceFromUrl(dao.getReferenceURL());
 
         photo = gameObject.GetComponentInChildren<RawImage>();
 
         StartCoroutine(ProfileLoad(Convert.ToString(Photo_url)));
+
+        // Load user's rank
+        reference = FirebaseDatabase.DefaultInstance.RootReference;
+        reference.Child("Score").OrderByChild("highscore").ValueChanged += ScoreValueChanged;
     }
 
     IEnumerator ProfileLoad(string MediaUrl)
@@ -65,6 +76,40 @@ public class ProfileEditor : MonoBehaviour
         else
         {
             photo.texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
+        }
+    }
+
+    void ScoreValueChanged(object sender, ValueChangedEventArgs args)
+    {
+        if (args.DatabaseError != null)
+        {
+            Debug.LogError(args.DatabaseError.Message);
+            return;
+        }
+
+        DataSnapshot data = args.Snapshot;
+        long n = 1, total = data.ChildrenCount;
+        if (data != null)
+        {
+            foreach (DataSnapshot cur in data.Children)
+            {
+                if (cur.Child("email").Value.ToString() == user.Email)
+                {
+                    string rankStr = "";
+                    switch (n % 10)
+                    {
+                        case 1: rankStr = "st"; break;
+                        case 2: rankStr = "nd"; break;
+                        case 3: rankStr = "rd"; break;
+                        default: rankStr = "th"; break;
+                    }
+                    Rank.text = n.ToString();
+                    Rank_dec.text = rankStr;
+                    Score.text = "Score: " + cur.Child("highscore").Value.ToString();
+                    break;
+                }
+                n += 1;
+            }
         }
     }
 

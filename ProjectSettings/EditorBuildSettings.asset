@@ -15,7 +15,7 @@ EditorBuildSettings:
     path: Assets/Scenes/PixelArtEditor/PixelArtEditor.unity
     guid: de8b6bd9e3702f649a798c6b844520ae
   - enabled: 1
-    path: Assets/Scenes/PNGmanager/PNGmanager.unity
+    path: Assets/Scenes/PixelArtEditor/PNGmanager/PNGmanager.unity
     guid: b21f8f7c504941641ac34d077e8f71c0
   - enabled: 1
     path: Assets/Scenes/Main/Profile.unity
