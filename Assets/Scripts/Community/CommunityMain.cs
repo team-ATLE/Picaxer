@@ -61,7 +61,6 @@ public class CommunityMain : MonoBehaviour
                 likes = new Dictionary<string, long>();
                 foreach (DataSnapshot cur in data.Children)
                 {
-                    Debug.Log(cur.Child("id").Value.ToString());
                     Post curPost = new Post(
                         cur.Child("id").Value.ToString(),
                         cur.Child("name").Value.ToString(),

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -53,7 +54,7 @@ public class CreatePost : MonoBehaviour
                 }
 
                 // storage에 로컬 이미지 업로드
-                string localFile = "./Assets/ExportedPng/" + imageName + ".png", imageURL = id + ".png";
+                string localFile = Path.Combine(Application.dataPath, "ExportedPng/", imageName + ".png"), imageURL = id + ".png";
 
                 // Create a reference to the file you want to upload
                 StorageReference imageRef = storageReference.Child("post").Child(imageURL);
