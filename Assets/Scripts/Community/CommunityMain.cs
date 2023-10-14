@@ -29,7 +29,7 @@ public class CommunityMain : MonoBehaviour
 
     DataSnapshot data;
     List<Post> posts;
-    Dictionary<string, long> likes;
+    Dictionary<long, long> likes;
     int size = 20; // number of posts per page
     int currSize = 0; // first index of post in current page
 
@@ -43,7 +43,7 @@ public class CommunityMain : MonoBehaviour
         }
         
         scrollRect = GameObject.Find("Scroll View").GetComponent<ScrollRect>();
-        likes = new Dictionary<string, long>();
+        likes = new Dictionary<long, long>();
 
         // databasereference 전체 post 가져오는 부분
         reference = FirebaseDatabase.DefaultInstance.RootReference;
@@ -58,11 +58,12 @@ public class CommunityMain : MonoBehaviour
                 
                 // Convert into List
                 posts = new List<Post>();
-                likes = new Dictionary<string, long>();
+                likes = new Dictionary<long, long>();
                 foreach (DataSnapshot cur in data.Children)
                 {
+                    Debug.Log(cur.Child("id").Value.ToString()); //
                     Post curPost = new Post(
-                        cur.Child("id").Value.ToString(),
+                        long.Parse(cur.Child("id").Value.ToString()),
                         cur.Child("name").Value.ToString(),
                         cur.Child("email").Value.ToString(), 
                         cur.Child("imageURL").Value.ToString(), 
@@ -71,7 +72,7 @@ public class CommunityMain : MonoBehaviour
                     );
                     posts.Add(curPost);
                     likes.Add(curPost.id, 0);
-                    reference.Child("Like").OrderByChild("post").EqualTo(long.Parse(curPost.id)).ValueChanged += LikeValueChanged;
+                    reference.Child("Like").OrderByChild("post").EqualTo(curPost.id).ValueChanged += LikeValueChanged;
                 }
                 posts.Reverse();
             }
@@ -86,11 +87,11 @@ public class CommunityMain : MonoBehaviour
                 
                 // Convert into List
                 posts = new List<Post>();
-                likes = new Dictionary<string, long>();
+                likes = new Dictionary<long, long>();
                 foreach (DataSnapshot cur in data.Children)
                 {
                     Post curPost = new Post(
-                        cur.Child("id").Value.ToString(),
+                        long.Parse(cur.Child("id").Value.ToString()),
                         cur.Child("name").Value.ToString(),
                         cur.Child("email").Value.ToString(), 
                         cur.Child("imageURL").Value.ToString(), 
@@ -99,7 +100,7 @@ public class CommunityMain : MonoBehaviour
                     );
                     posts.Add(curPost);
                     likes.Add(curPost.id, 0);
-                    reference.Child("Like").OrderByChild("post").EqualTo(long.Parse(curPost.id)).ValueChanged += LikeValueChanged;
+                    reference.Child("Like").OrderByChild("post").EqualTo(curPost.id).ValueChanged += LikeValueChanged;
                 }
                 posts.Reverse();
             }
@@ -120,7 +121,7 @@ public class CommunityMain : MonoBehaviour
             // find if the user likes ith post
             foreach (DataSnapshot cur in data2.Children)
             {
-                likes[cur.Child("post").Value.ToString()] = data2.ChildrenCount;
+                likes[long.Parse(cur.Child("post").Value.ToString())] = data2.ChildrenCount;
             }
             Print();
         }
@@ -145,7 +146,7 @@ public class CommunityMain : MonoBehaviour
             text_content[1].text = posts[i].content;
             text_content[2].text = posts[i].dateTime;
             text_content[3].text = likes[posts[i].id].ToString();
-            string post_id = posts[i].id;
+            long post_id = posts[i].id;
             content.GetComponentInChildren<Button>().onClick.AddListener(() => UpdateLike(post_id));
         }
     }
@@ -178,16 +179,16 @@ public class CommunityMain : MonoBehaviour
         Print();
     }
 
-    void UpdateLike(string id) 
+    void UpdateLike(long id) 
     {
         string key = "";
         Dictionary<string, object> values = new Dictionary<string, object>();
         values["user"] = user.Email;
-        values["post"] = long.Parse(id);
+        values["post"] = id;
         Dictionary<string, object> childUpdates = new Dictionary<string, object>();
         
 
-        reference.Child("Like").OrderByChild("post").EqualTo(long.Parse(id)).GetValueAsync().ContinueWithOnMainThread(task => {
+        reference.Child("Like").OrderByChild("post").EqualTo(id).GetValueAsync().ContinueWithOnMainThread(task => {
             if (task.IsCompleted) {
                 foreach (var cur in task.Result.Children)
                 {
@@ -196,7 +197,7 @@ public class CommunityMain : MonoBehaviour
                     {
                         // delete
                         childUpdates["/Like/" + key] = null;
-                        childUpdates["/Post/" + id + "/like_counts/"] = likes[id] - 1;
+                        childUpdates["/Post/" + id.ToString() + "/like_counts/"] = likes[id] - 1;
                         likes[id] -= 1;
                         reference.UpdateChildrenAsync(childUpdates);
                         return;

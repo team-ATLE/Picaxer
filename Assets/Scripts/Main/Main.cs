@@ -18,7 +18,7 @@ public class Main : MonoBehaviour
         user = auth.CurrentUser;
         if (user != null) {
             if (user.DisplayName.Length > 0)
-                Message.text = "Hello, " + user.DisplayName + "!";
+                Message.text = "Hello, \n" + user.DisplayName + "!";
             else
                 Message.text = "Hello!";
         }
@@ -30,7 +30,9 @@ public class Main : MonoBehaviour
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
-        Application.Quit(); // Only for Android
+        {
+            Application.Quit(); // Only for Android
+        }
     }
 
     public void ProfileClick() {

@@ -46,41 +46,46 @@ public class CreatePost : MonoBehaviour
             return;
         }
         long id = 0;
-        reference.Child("Post").LimitToLast(1).GetValueAsync().ContinueWithOnMainThread(task => { 
+        reference.Child("Post").OrderByChild("id").LimitToLast(1).GetValueAsync().ContinueWithOnMainThread(task => { 
             if (task.IsCompleted) {
                 foreach (DataSnapshot cur in task.Result.Children)
                 {
-                    id = long.Parse(cur.Key) + 1;
+                    Debug.Log(cur.Key);
+                    id = long.Parse(cur.Child("id").Value.ToString()) + 1;
+                    Debug.Log(id);
+                    // id = long.Parse(cur.Key) + 1;
                 }
 
                 // storage에 로컬 이미지 업로드
-                string localFile = Path.Combine(Application.persistentDataPath, "ExportedPng", imageName + ".png"), imageURL = id + ".png";
-                // Application.dataPath -> Application.persistentDataPath
+                string localFile = Path.Combine(Application.persistentDataPath, "ExportedPng", imageName + ".png");
+                string localFile_uri = string.Format("{0}://{1}", Uri.UriSchemeFile, localFile);
+                string imageURL = id + ".png";
 
                 // Create a reference to the file you want to upload
                 StorageReference imageRef = storageReference.Child("post").Child(imageURL);
 
                 // Upload the file to the path
-                imageRef.PutFileAsync(localFile).ContinueWith((Task<StorageMetadata> task2) => {
+                imageRef.PutFileAsync(localFile_uri).ContinueWith((Task<StorageMetadata> task2) => {
                     if (task2.IsFaulted || task2.IsCanceled) {
                         Debug.Log(task2.Exception.ToString());
                     }
                     else {
+                        // Message.text = "Finish uploading..."; // 개발환경에선 막힘, 근데 실행에서는 잘됨
                         Debug.Log("Finish uploading...");
 
                         // Change imageURL to result download URL.
                         imageURL = imageRef.GetDownloadUrlAsync().Result.ToString(); // Download URL
+                        Debug.Log(imageURL);
 
-                        Debug.Log("DONE");
+                        Debug.Log("Image uploaded");
 
                         // Add date
-                        string dateTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
-                        Post post = new Post(id.ToString(), user.DisplayName, user.Email, imageURL, content, dateTime);
+                        string dateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                        Post post = new Post(id, user.DisplayName, user.Email, imageURL, content, dateTime);
                         string json = JsonUtility.ToJson(post);
                         reference.Child("Post").Child(id.ToString()).SetRawJsonValueAsync(json);
-                        Debug.Log("Complete");
 
-                        Message.text = "Upload complete";
+                        Debug.Log("Upload complete");
                     }
                 });
                 StartCoroutine(UploadWait());

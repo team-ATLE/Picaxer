@@ -18,7 +18,7 @@ public class PhotoLoader : MonoBehaviour
     public void LoadPng()
     {
         // Get directory
-        string directoryPath = Path.Combine(Application.dataPath, "ExportedPng");
+        string directoryPath = Path.Combine(Application.persistentDataPath, "ExportedPng");
 
         if (!Directory.Exists(directoryPath))
         {
