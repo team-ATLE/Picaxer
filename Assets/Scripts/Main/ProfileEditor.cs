@@ -88,7 +88,7 @@ public class ProfileEditor : MonoBehaviour
         }
 
         DataSnapshot data = args.Snapshot;
-        long n = 1, total = data.ChildrenCount;
+        long n = 0, total = data.ChildrenCount;
         if (data != null)
         {
             foreach (DataSnapshot cur in data.Children)
@@ -96,14 +96,14 @@ public class ProfileEditor : MonoBehaviour
                 if (cur.Child("email").Value.ToString() == user.Email)
                 {
                     string rankStr = "";
-                    switch (n % 10)
+                    switch ((total - n) % 10)
                     {
                         case 1: rankStr = "st"; break;
                         case 2: rankStr = "nd"; break;
                         case 3: rankStr = "rd"; break;
                         default: rankStr = "th"; break;
                     }
-                    Rank.text = n.ToString();
+                    Rank.text = (total - n).ToString();
                     Rank_dec.text = rankStr;
                     Score.text = "Score: " + cur.Child("highscore").Value.ToString();
                     break;
