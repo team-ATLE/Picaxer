@@ -1443,8 +1443,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Hello, pixels!
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 17b482b27989b2e42ba2cc9a5969d05a, type: 2}
-  m_sharedMaterial: {fileID: -2306084977459795861, guid: 17b482b27989b2e42ba2cc9a5969d05a, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 0a4f26bed54e58b43a3a5465c3e87952, type: 2}
+  m_sharedMaterial: {fileID: 4360027738906316239, guid: 0a4f26bed54e58b43a3a5465c3e87952, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

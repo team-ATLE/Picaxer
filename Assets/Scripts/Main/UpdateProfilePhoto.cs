@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -47,15 +48,18 @@ public class UpdateProfilePhoto : MonoBehaviour
             return;
         }
 
-        string localFile = "./Assets/ExportedPng/" + imageName + ".png", imageURL = user.UserId + ".png";
+        string localFile = Path.Combine(Application.persistentDataPath, "ExportedPng", imageName + ".png");
+        string localFile_uri = string.Format("{0}://{1}", Uri.UriSchemeFile, localFile);
+        string imageURL = user.UserId + ".png";
         StorageReference imageRef = storageReference.Child("profile").Child(imageURL);
         // upload new profile photo
-        imageRef.PutFileAsync(localFile).ContinueWith((Task<StorageMetadata> task) => {
+        imageRef.PutFileAsync(localFile_uri).ContinueWith((Task<StorageMetadata> task) => {
             if (task.IsFaulted || task.IsCanceled) {
                 Debug.Log(task.Exception.ToString());
             }
             else {
-                Message.text = "Finish uploading...";
+                // Message.text = "Finish uploading..."; // 개발환경에선 막힘, 근데 실행에서는 잘됨
+                Debug.Log("Finish uploading...");
 
                 // Change imageURL to result download URL.
                 Photo_url = imageRef.GetDownloadUrlAsync().Result;
@@ -84,7 +88,7 @@ public class UpdateProfilePhoto : MonoBehaviour
 
     IEnumerator UploadWait() 
     {
-        yield return new WaitForSeconds(3.0f);
+        yield return new WaitForSeconds(4.0f);
         SceneManager.LoadScene("Profile");
     }
 

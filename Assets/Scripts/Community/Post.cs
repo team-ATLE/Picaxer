@@ -1,5 +1,5 @@
 public class Post {
-    public string id;
+    public long id;
     public string name;
     public string email;
     public string imageURL;
@@ -10,7 +10,7 @@ public class Post {
     public Post() {
     }
 
-    public Post(string id, string name, string email, string imageURL, string content, string dateTime) {
+    public Post(long id, string name, string email, string imageURL, string content, string dateTime) {
         this.id = id;
         this.name = name;
         this.email = email;
