@@ -58,7 +58,7 @@ public class UpdateProfilePhoto : MonoBehaviour
                 Debug.Log(task.Exception.ToString());
             }
             else {
-                Message.text = "Finish uploading..."; // 개발환경에선 막힘, 근데 실행에서는 잘됨
+                // Message.text = "Finish uploading..."; // 개발환경에선 막힘, 근데 실행에서는 잘됨
                 Debug.Log("Finish uploading...");
 
                 // Change imageURL to result download URL.
