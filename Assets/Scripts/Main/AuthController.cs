@@ -38,6 +38,12 @@ public class AuthController : MonoBehaviour
             Message.text = "";
     }
 
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        Application.Quit(); // Only for Android
+    }
+
     public void SignUpMoveClick()
     {
         SceneManager.LoadScene("SignUp");

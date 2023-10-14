@@ -27,6 +27,12 @@ public class Main : MonoBehaviour
         }
     }
 
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        Application.Quit(); // Only for Android
+    }
+
     public void ProfileClick() {
         SceneManager.LoadScene("Profile");
     }
