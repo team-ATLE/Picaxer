@@ -18,7 +18,7 @@ public class FileListLoader : MonoBehaviour
     public void LoadFileList()
     {
         // Get directory
-        string directoryPath = Path.Combine(Application.dataPath, "SavedPixelArts");
+        string directoryPath = Path.Combine(Application.persistentDataPath, "SavedPixelArts"); // Application.dataPath -> Application.persistentDataPath
 
         if (!Directory.Exists(directoryPath))
         {

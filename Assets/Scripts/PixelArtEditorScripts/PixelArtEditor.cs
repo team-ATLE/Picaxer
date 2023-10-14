@@ -323,7 +323,7 @@ public class PixelArtEditor : MonoBehaviour
         string json = JsonUtility.ToJson(data);
 
         // 저장할 디렉토리 경로 생성
-        string directoryPath = Path.Combine(Application.dataPath, "SavedPixelArts");
+        string directoryPath = Path.Combine(Application.persistentDataPath, "SavedPixelArts"); // Application.dataPath -> Application.persistentDataPath
 
         // 디렉토리가 없는 경우 디렉토리를 생성
         if (!Directory.Exists(directoryPath))
@@ -388,7 +388,7 @@ private void ColorPixelUnderMouse()
             return;
         }
 
-        string filePath = Path.Combine(Application.dataPath, "SavedPixelArts", pixelArtName + ".json");
+        string filePath = Path.Combine(Application.persistentDataPath, "SavedPixelArts", pixelArtName + ".json"); // Application.dataPath -> Application.persistentDataPath
 
         if (!File.Exists(filePath))
         {
@@ -447,7 +447,7 @@ private void ColorPixelUnderMouse()
             return;
         }
 
-        string filePath = Path.Combine(Application.dataPath, "SavedPixelArts", pixelArtName + ".json");
+        string filePath = Path.Combine(Application.persistentDataPath, "SavedPixelArts", pixelArtName + ".json"); // Application.dataPath -> Application.persistentDataPath
 
         if (!File.Exists(filePath))
         {
@@ -482,7 +482,7 @@ private void ColorPixelUnderMouse()
         byte[] bytes = texture.EncodeToPNG();
 
         // 디렉토리에 png 파일 세이브
-        string directoryPath = Path.Combine(Application.dataPath, "ExportedPng");
+        string directoryPath = Path.Combine(Application.persistentDataPath, "ExportedPng"); // Application.dataPath -> Application.persistentDataPath
 
         if (!Directory.Exists(directoryPath))
         {

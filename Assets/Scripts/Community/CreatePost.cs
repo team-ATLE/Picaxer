@@ -54,7 +54,8 @@ public class CreatePost : MonoBehaviour
                 }
 
                 // storage에 로컬 이미지 업로드
-                string localFile = Path.Combine(Application.dataPath, "ExportedPng/", imageName + ".png"), imageURL = id + ".png";
+                string localFile = Path.Combine(Application.persistentDataPath, "ExportedPng", imageName + ".png"), imageURL = id + ".png";
+                // Application.dataPath -> Application.persistentDataPath
 
                 // Create a reference to the file you want to upload
                 StorageReference imageRef = storageReference.Child("post").Child(imageURL);

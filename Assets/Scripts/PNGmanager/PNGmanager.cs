@@ -19,7 +19,7 @@ public class PNGmanager : MonoBehaviour
 
     private void RefreshFileList()
     {
-        string path = Application.dataPath + "/ExportedPng/";
+        string path = Application.persistentDataPath + "/ExportedPng/"; // Application.dataPath -> Application.persistentDataPath
         pngFiles.Clear();
         pngFiles.AddRange(Directory.GetFiles(path, "*.png"));
         Debug.Log($"Total PNG files found: {pngFiles.Count}");
