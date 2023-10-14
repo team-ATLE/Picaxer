@@ -27,7 +27,8 @@ public class Player : MonoBehaviour
         {
             direction = Vector3.down;
 
-            if (Input.GetButton("Jump")) {
+             // 키보드 입력 (스페이스바) 및 터치 입력을 모두 체크합니다.
+            if (Input.GetButton("Jump") || WasScreenTouched()) {
                 direction = Vector3.up * jumpForce;
             }
         }
@@ -41,5 +42,17 @@ public class Player : MonoBehaviour
             FindObjectOfType<GameManager>().GameOver();
         }
     }
+    
+    // 화면이 터치되었는지 검사하는 메서드
+    private bool WasScreenTouched()
+    {
+        // 입력이 없으면 false를 반환
+        if (Input.touchCount == 0) return false;
 
+        // 첫 번째 터치 입력을 가져옴
+        Touch touch = Input.GetTouch(0);
+
+        // 터치가 시작되었을 때만 true를 반환
+        return touch.phase == TouchPhase.Began;
+    }
 }

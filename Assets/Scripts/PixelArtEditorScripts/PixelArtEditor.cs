@@ -307,9 +307,11 @@ public class PixelArtEditor : MonoBehaviour
         string inputPixelArtName = nameInput.text;
         if (string.IsNullOrEmpty(inputPixelArtName))
         {
-            Debug.LogError("No file name provided.");
+            //Debug.LogError("No file name provided.");
+            ShowAndroidToastMessage("파일 이름이 없습니다.");
             return;
         }
+
 
         List<Color> colors = new List<Color>();
 
@@ -335,7 +337,8 @@ public class PixelArtEditor : MonoBehaviour
         string filePath = Path.Combine(directoryPath, inputPixelArtName + ".json");
         File.WriteAllText(filePath, json);
 
-        Debug.Log("Pixel Art saved!");
+        //Debug.Log("Pixel Art saved!");
+        ShowAndroidToastMessage("픽셀 아트 저장 완료!");
     }
 
     
@@ -384,7 +387,7 @@ private void ColorPixelUnderMouse()
        //픽셀 아트의 이름을 문자열 매개변수로 받게 수정 
         if (string.IsNullOrEmpty(pixelArtName))
         {
-            Debug.LogError("작성된 파일 이름이 없습니다.");
+            //Debug.LogError("작성된 파일 이름이 없습니다.");
             return;
         }
 
@@ -392,7 +395,8 @@ private void ColorPixelUnderMouse()
 
         if (!File.Exists(filePath))
         {
-            Debug.LogWarning("저장된 Pixel Art 데이터를 찾을 수 없습니다. 로드를 건너뜁니다.");
+            //Debug.LogWarning("저장된 Pixel Art 데이터를 찾을 수 없습니다. 로드를 건너뜁니다.");
+            ShowAndroidToastMessage("저장된 Pixel Art 데이터를 찾을 수 없습니다. 로드를 건너뜁니다.");
             return;
         }
 
@@ -402,7 +406,8 @@ private void ColorPixelUnderMouse()
 
         if (data == null)
         {
-            Debug.LogWarning("저장된 Pixel Art 데이터를 찾을 수 없습니다. 로드를 건너뜁니다.");
+            //Debug.LogWarning("저장된 Pixel Art 데이터를 찾을 수 없습니다. 로드를 건너뜁니다.");
+            ShowAndroidToastMessage("저장된 Pixel Art 데이터를 찾을 수 없습니다. 로드를 건너뜁니다.");
             return;
         }
 
@@ -443,7 +448,8 @@ private void ColorPixelUnderMouse()
     {
         if (string.IsNullOrEmpty(pixelArtName))
         {
-            Debug.LogError("파일명을 입력하세요.");
+            //Debug.LogError("파일명을 입력하세요.");
+            ShowAndroidToastMessage("파일명을 입력하세요.");
             return;
         }
 
@@ -451,7 +457,8 @@ private void ColorPixelUnderMouse()
 
         if (!File.Exists(filePath))
         {
-            Debug.LogWarning("픽셀 아트 데이터가 존재하지 않습니다. 로드를 스킵합니다.");
+            //Debug.LogWarning("픽셀 아트 데이터가 존재하지 않습니다. 로드를 스킵합니다.");
+            ShowAndroidToastMessage("픽셀 아트 데이터가 존재하지 않습니다. 로드를 스킵합니다.");
             return;
         }
 
@@ -460,7 +467,8 @@ private void ColorPixelUnderMouse()
 
         if (data == null)
         {
-            Debug.LogWarning("픽셀 아트 데이터가 존재하지 않습니다. 로드를 스킵합니다.");
+            //Debug.LogWarning("픽셀 아트 데이터가 존재하지 않습니다. 로드를 스킵합니다.");
+            ShowAndroidToastMessage("픽셀 아트 데이터가 존재하지 않습니다. 로드를 스킵합니다.");
             return;
         }
 
@@ -492,7 +500,8 @@ private void ColorPixelUnderMouse()
         string exportPath = Path.Combine(directoryPath, pixelArtName + ".png");
         File.WriteAllBytes(exportPath, bytes);
 
-        Debug.Log("Pixel Art exported!");
+        //Debug.Log("Pixel Art exported!");
+        ShowAndroidToastMessage("PNG 내보내기 완료!");
     }
 
     //색 추가 기능
@@ -518,7 +527,8 @@ private void ColorPixelUnderMouse()
         }
         else
         {
-            Debug.LogWarning("Invalid RGB input.");
+            //Debug.LogWarning("Invalid RGB input.");
+            ShowAndroidToastMessage("적절하지 않은 RGB값입니다. 0~255값을 입력해주세요!");
         }
     }
 
@@ -568,6 +578,23 @@ private void ColorPixelUnderMouse()
     public void OnZoomOutButtonClicked()
     {
         ScaleGrid(0.9f);  // Zoom out by 10%
+    }
+
+    //안드로이드 빌드용 토스트메세지 출력 함수
+    public static void ShowAndroidToastMessage(string message)
+    {
+        if (Application.platform == RuntimePlatform.Android)
+        {
+            AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+            AndroidJavaObject currentActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+
+            currentActivity.Call("runOnUiThread", new AndroidJavaRunnable(() =>
+            {
+                AndroidJavaClass toastClass = new AndroidJavaClass("android.widget.Toast");
+                AndroidJavaObject toastInstance = toastClass.CallStatic<AndroidJavaObject>("makeText", currentActivity, message, toastClass.GetStatic<int>("LENGTH_SHORT"));
+                toastInstance.Call("show");
+            }));
+        }
     }
 
 
