@@ -1571,21 +1571,13 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'You have to use valid e-mail.
-
-
-    the email should be unique in this
-    service.
-
-
-    Your password must have at least 6 characters.
-
-
-    simple password
-    (ex: 123456) is not accepted.'
+  m_text: "\uC62C\uBC14\uB978 \uD615\uC2DD\uC758 \uC774\uBA54\uC77C\uC744 \uC0AC\uC6A9\uD558\uC2ED\uC2DC\uC624.\n\n\uC774\uBA54\uC77C\uC740
+    \uC911\uBCF5\uB420 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.\n\n\uBE44\uBC00\uBC88\uD638\uB294
+    \uCD5C\uC18C 6\uC790 \uC774\uC0C1\uC774\uC5B4\uC57C \uD569\uB2C8\uB2E4.\n\n\uB2E8\uC21C\uD55C
+    \uBE44\uBC00\uBC88\uD638(\uC608: 123456)\uB294 \uC0AC\uC6A9\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4."
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 17b482b27989b2e42ba2cc9a5969d05a, type: 2}
-  m_sharedMaterial: {fileID: -2306084977459795861, guid: 17b482b27989b2e42ba2cc9a5969d05a, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 0a4f26bed54e58b43a3a5465c3e87952, type: 2}
+  m_sharedMaterial: {fileID: 4360027738906316239, guid: 0a4f26bed54e58b43a3a5465c3e87952, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1609,8 +1601,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 15
-  m_fontSizeBase: 15
+  m_fontSize: 20
+  m_fontSizeBase: 20
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
