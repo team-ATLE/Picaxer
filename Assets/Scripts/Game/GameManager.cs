@@ -1,18 +1,19 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using System.IO;
+
 using Firebase;
 using Firebase.Auth;
 using Firebase.Database;
 using Firebase.Extensions;
 
+using static CommunityDAO;
+using static HighScore;
+
 [DefaultExecutionOrder(-1)]
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
-
-    public Texture2D SelectedTexture { get; private set; } // 현재 선택된 텍스쳐를 저장
 
     public float initialGameSpeed = 5f;
     public float gameSpeedIncrease = 0.1f;
@@ -22,8 +23,6 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI hiscoreText;
     public TextMeshProUGUI gameOverText;
     public Button retryButton;
-    public RectTransform imageSelectionPanel;
-    public GameObject imageButtonPrefab;
 
     private Player player;
     private Spawner spawner;
@@ -32,47 +31,40 @@ public class GameManager : MonoBehaviour
     Firebase.Auth.FirebaseUser user;
     DatabaseReference reference;
     private float score;
-    private string directoryPath;
 
     private void Awake()
     {
-        directoryPath = Path.Combine(Application.persistentDataPath, "ExportedPng");
-
         auth = FirebaseAuth.DefaultInstance;
         user = auth.CurrentUser;
         reference = FirebaseDatabase.DefaultInstance.RootReference;
         reference.Child("Score").OrderByChild("email").EqualTo(user.Email).ValueChanged += ScoreValueChanged;
-
-        if (Instance != null)
-        {
+        if (Instance != null) {
             DestroyImmediate(gameObject);
-        }
-        else
-        {
+        } else {
             Instance = this;
-            DontDestroyOnLoad(this.gameObject);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this) {
+            Instance = null;
         }
     }
 
     private void Start()
     {
-        InitializeGame();
-    }
-    public void InitializeGame()
-    {
         player = FindObjectOfType<Player>();
         spawner = FindObjectOfType<Spawner>();
 
         NewGame();
-        LoadImagesFromDirectory();
     }
-
 
     public void NewGame()
     {
         Obstacle[] obstacles = FindObjectsOfType<Obstacle>();
-        foreach (var obstacle in obstacles)
-        {
+
+        foreach (var obstacle in obstacles) {
             Destroy(obstacle.gameObject);
         }
 
@@ -84,7 +76,6 @@ public class GameManager : MonoBehaviour
         spawner.gameObject.SetActive(true);
         gameOverText.gameObject.SetActive(false);
         retryButton.gameObject.SetActive(false);
-        imageSelectionPanel.gameObject.SetActive(false);  // 시작 시 이미지 선택 패널 활성화
 
         UpdateHiscore();
     }
@@ -98,7 +89,8 @@ public class GameManager : MonoBehaviour
         spawner.gameObject.SetActive(false);
         gameOverText.gameObject.SetActive(true);
         retryButton.gameObject.SetActive(true);
-        imageSelectionPanel.gameObject.SetActive(true);  // 게임오버 시 이미지 선택 패널 활성화
+
+        UpdateHiscore();
     }
 
     private void Update()
@@ -110,7 +102,11 @@ public class GameManager : MonoBehaviour
 
     private void UpdateHiscore()
     {
+        // PlayerPrefs.DeleteKey("hiscore");
         float hiscore = PlayerPrefs.GetFloat("hiscore", 0);
+
+        Debug.Log("hi!");
+
         if (score > hiscore)
         {
             hiscore = score;
@@ -119,7 +115,10 @@ public class GameManager : MonoBehaviour
             HighScore newhighscore = new HighScore(user.Email, Mathf.FloorToInt(score));
             string json = JsonUtility.ToJson(newhighscore);
             reference.Child("Score").Child(user.UserId).SetRawJsonValueAsync(json);
+            Debug.Log("Finished");
         }
+
+        // hiscoreText.text = Mathf.FloorToInt(hiscore).ToString("D5");
     }
 
     void ScoreValueChanged(object sender, ValueChangedEventArgs args)
@@ -131,8 +130,10 @@ public class GameManager : MonoBehaviour
         }
 
         DataSnapshot data = args.Snapshot;
+        Debug.Log("ScoreValueChanged");
         if (data != null)
         {
+            // find if the user likes ith post
             foreach (DataSnapshot cur in data.Children)
             {
                 long value = long.Parse(cur.Child("highscore").Value.ToString());
@@ -141,48 +142,4 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void LoadImagesFromDirectory()
-    {
-        // 지정된 경로가 존재하는지 확인
-        if (Directory.Exists(directoryPath))
-        {
-            // 경로 내의 모든 PNG 파일 가져오기
-            var filePaths = Directory.GetFiles(directoryPath, "*.png");
-            
-            // PNG 파일이 없으면 경고 출력
-            if (filePaths.Length == 0)
-            {
-                Debug.LogWarning("No PNG files found in the directory!");
-                return;
-            }
-
-            foreach (var filePath in filePaths)
-            {
-                Debug.Log("Loading image from: " + filePath);  // 로그 메시지 추가
-
-                // 파일에서 이미지 데이터 읽기
-                byte[] fileData = File.ReadAllBytes(filePath);
-                Texture2D texture = new Texture2D(2, 2);
-                texture.LoadImage(fileData); 
-
-                // 버튼 생성하고 이미지 설정
-                GameObject buttonObj = Instantiate(imageButtonPrefab, imageSelectionPanel);
-                buttonObj.GetComponent<RawImage>().texture = texture;
-                buttonObj.GetComponent<Button>().onClick.AddListener(() => SelectImage(texture));
-            }
-        }
-        else
-        {
-            Debug.LogError("Directory not found: " + directoryPath);  // 로그 메시지 추가
-        }
-    }
-
-    void SelectImage(Texture2D selectedTexture)
-    {
-        SelectedTexture = selectedTexture;
-        imageSelectionPanel.gameObject.SetActive(false);  // 이미지 선택 후 패널 비활성화
-
-        Spawner spawner = FindObjectOfType<Spawner>();
-        if(spawner != null) spawner.UpdateTree2Sprite(SelectedTexture);
-    }
 }
