@@ -6,6 +6,7 @@ public class Post {
     public string content;
     public string dateTime;
     public long like_counts = 0;
+    public long download_counts = 0;
 
     public Post() {
     }
@@ -17,5 +18,15 @@ public class Post {
         this.imageURL = imageURL;
         this.content = content;
         this.dateTime = dateTime;
+    }
+
+    public Post(long id, string name, string email, string imageURL, string content, string dateTime, long download_counts) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.imageURL = imageURL;
+        this.content = content;
+        this.dateTime = dateTime;
+        this.download_counts = download_counts;
     }
 }

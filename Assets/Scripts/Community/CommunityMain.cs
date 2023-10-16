@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
@@ -13,6 +14,9 @@ using Firebase.Database;
 using Firebase.Storage;
 using Firebase.Extensions;
 
+using static Post;
+using static CommunityDAO;
+
 public class CommunityMain : MonoBehaviour
 {
     FirebaseAuth auth;
@@ -24,8 +28,7 @@ public class CommunityMain : MonoBehaviour
     public GameObject buttonPrefab;
     public Transform contentPanel;
     ScrollRect scrollRect;
-    RawImage full_heart;
-    RawImage empty_heart;
+    public TMP_Text Message;
 
     DataSnapshot data;
     List<Post> posts;
@@ -47,6 +50,8 @@ public class CommunityMain : MonoBehaviour
 
         // databasereference 전체 post 가져오는 부분
         reference = FirebaseDatabase.DefaultInstance.RootReference;
+        CommunityDAO dao = new CommunityDAO();
+        storageReference = FirebaseStorage.DefaultInstance.GetReferenceFromUrl(dao.getReferenceURL());
         GetRecent();
     }
 
@@ -68,7 +73,8 @@ public class CommunityMain : MonoBehaviour
                         cur.Child("email").Value.ToString(), 
                         cur.Child("imageURL").Value.ToString(), 
                         cur.Child("content").Value.ToString(), 
-                        cur.Child("dateTime").Value.ToString()
+                        cur.Child("dateTime").Value.ToString(),
+                        long.Parse(cur.Child("download_counts").Value.ToString())
                     );
                     posts.Add(curPost);
                     likes.Add(curPost.id, 0);
@@ -96,7 +102,37 @@ public class CommunityMain : MonoBehaviour
                         cur.Child("email").Value.ToString(), 
                         cur.Child("imageURL").Value.ToString(), 
                         cur.Child("content").Value.ToString(), 
-                        cur.Child("dateTime").Value.ToString()
+                        cur.Child("dateTime").Value.ToString(),
+                        long.Parse(cur.Child("download_counts").Value.ToString())
+                    );
+                    posts.Add(curPost);
+                    likes.Add(curPost.id, 0);
+                    reference.Child("Like").OrderByChild("post").EqualTo(curPost.id).ValueChanged += LikeValueChanged;
+                }
+                posts.Reverse();
+            }
+        });
+    }
+
+    void GetDownload()
+    {
+        reference.Child("Post").OrderByChild("download_counts").GetValueAsync().ContinueWithOnMainThread(task => {
+            if (task.IsCompleted) {
+                data = task.Result;
+                
+                // Convert into List
+                posts = new List<Post>();
+                likes = new Dictionary<long, long>();
+                foreach (DataSnapshot cur in data.Children)
+                {
+                    Post curPost = new Post(
+                        long.Parse(cur.Child("id").Value.ToString()),
+                        cur.Child("name").Value.ToString(),
+                        cur.Child("email").Value.ToString(), 
+                        cur.Child("imageURL").Value.ToString(), 
+                        cur.Child("content").Value.ToString(), 
+                        cur.Child("dateTime").Value.ToString(),
+                        long.Parse(cur.Child("download_counts").Value.ToString())
                     );
                     posts.Add(curPost);
                     likes.Add(curPost.id, 0);
@@ -146,8 +182,12 @@ public class CommunityMain : MonoBehaviour
             text_content[1].text = posts[i].content;
             text_content[2].text = posts[i].dateTime;
             text_content[3].text = likes[posts[i].id].ToString();
+            text_content[4].text = posts[i].download_counts.ToString();
             long post_id = posts[i].id;
-            content.GetComponentInChildren<Button>().onClick.AddListener(() => UpdateLike(post_id));
+            int index = i;
+            Button[] buttons = content.GetComponentsInChildren<Button>();
+            buttons[0].onClick.AddListener(() => UpdateLike(post_id));
+            buttons[1].onClick.AddListener(() => DownloadFile(post_id, index));
         }
     }
 
@@ -197,9 +237,10 @@ public class CommunityMain : MonoBehaviour
                     {
                         // delete
                         childUpdates["/Like/" + key] = null;
-                        childUpdates["/Post/" + id.ToString() + "/like_counts/"] = likes[id] - 1;
+                        childUpdates["/Post/" + id + "/like_counts/"] = likes[id] - 1;
                         likes[id] -= 1;
                         reference.UpdateChildrenAsync(childUpdates);
+                        Message.text = "Don't you like it? /_\\";
                         return;
                     }
                 }
@@ -207,9 +248,42 @@ public class CommunityMain : MonoBehaviour
                 // insert
                 key = reference.Child("Like").Push().Key;
                 childUpdates["/Like/" + key] = values;
-                childUpdates["/Post/" + id + "/like_counts/"] = likes[id] + 1;
+                childUpdates["/Post/" + id+ "/like_counts/"] = likes[id] + 1;
                 likes[id] += 1;
                 reference.UpdateChildrenAsync(childUpdates);
+                Message.text = "Do you like it? >_<";
+            }
+        });
+    }
+
+    void DownloadFile(long id, int index)
+    {
+        string directoryPath = Path.Combine(Application.persistentDataPath, "DownloadedPng"); 
+        if (!Directory.Exists(directoryPath))
+        {
+            Directory.CreateDirectory(directoryPath);
+        }
+
+        // Create local filesystem URL
+        string imageURL = id.ToString() + ".png";
+        string localFile = Path.Combine(Application.persistentDataPath, "DownloadedPng", imageURL);
+        string localFile_uri = string.Format("{0}://{1}", Uri.UriSchemeFile, localFile);
+
+
+        // Download to the local filesystem
+        StorageReference imageRef = storageReference.Child("post").Child(imageURL);
+        imageRef.GetFileAsync(localFile_uri).ContinueWithOnMainThread(task => {
+            if (!task.IsFaulted && !task.IsCanceled) {
+                Debug.Log("Successfully downloaded.");
+
+                // update download counts
+                Dictionary<string, object> childUpdates = new Dictionary<string, object>();
+                posts[index].download_counts += 1;
+                childUpdates["/Post/" + id + "/download_counts/"] = posts[index].download_counts + 1;
+                reference.UpdateChildrenAsync(childUpdates);
+                Debug.Log("Successfully update children");
+                Message.text = "GOTCHA! Check your download tab.";
+                Print();
             }
         });
     }
@@ -232,5 +306,10 @@ public class CommunityMain : MonoBehaviour
     public void PopularClick()
     {
         GetPopular();
+    }
+
+    public void DownloadClick()
+    {
+        GetDownload();
     }
 }

@@ -70,13 +70,14 @@ public class CreatePost : MonoBehaviour
                         Debug.Log(task2.Exception.ToString());
                     }
                     else {
-                        // Message.text = "Finish uploading..."; // 개발환경에선 막힘, 근데 실행에서는 잘됨
+                        Message.text = "Finish uploading..."; // 개발환경에선 막힘, 근데 실행에서는 잘됨
                         Debug.Log("Finish uploading...");
 
                         // Change imageURL to result download URL.
                         imageURL = imageRef.GetDownloadUrlAsync().Result.ToString(); // Download URL
                         Debug.Log(imageURL);
 
+                        Message.text = "Image uploaded";
                         Debug.Log("Image uploaded");
 
                         // Add date
@@ -85,6 +86,7 @@ public class CreatePost : MonoBehaviour
                         string json = JsonUtility.ToJson(post);
                         reference.Child("Post").Child(id.ToString()).SetRawJsonValueAsync(json);
 
+                        Message.text = "Upload complete";
                         Debug.Log("Upload complete");
                     }
                 });
