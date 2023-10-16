@@ -568,7 +568,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1225151239}
   m_HandleRect: {fileID: 1225151238}
   m_Direction: 0
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -671,7 +671,6 @@ MonoBehaviour:
     spawnChance: 0.1
   - prefab: {fileID: 9020847862631447337, guid: 394d4345e3d37417eb1207925226db47, type: 3}
     spawnChance: 0.05
-  tree2Prefab: {fileID: 0}
   minSpawnRate: 1
   maxSpawnRate: 1.5
 --- !u!1 &257648130
@@ -1727,7 +1726,8 @@ MonoBehaviour:
   hiscoreText: {fileID: 151625051}
   gameOverText: {fileID: 1081033933}
   retryButton: {fileID: 1417875464}
-  imageSelectionPanel: {fileID: 1357150438}
+  imageSelectionPanel: {fileID: 1722211848}
+  imageContentPanel: {fileID: 2075034236}
   imageButtonPrefab: {fileID: 4174747591844573648, guid: 0b26fee969f97014f883a21cdf95a59a, type: 3}
 --- !u!4 &1501353567
 Transform:
@@ -1799,7 +1799,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Content: {fileID: 2075034236}
-  m_Horizontal: 1
+  m_Horizontal: 0
   m_Vertical: 1
   m_MovementType: 2
   m_Elasticity: 0.1
@@ -2411,7 +2411,7 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 0
-  m_Spacing: 2
+  m_Spacing: 1
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 0

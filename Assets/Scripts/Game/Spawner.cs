@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;  // List를 사용하기 위해 추가
 
 public class Spawner : MonoBehaviour
 {
@@ -10,9 +11,7 @@ public class Spawner : MonoBehaviour
         public float spawnChance;
     }
 
-    public SpawnableObject[] objects;
-
-    public GameObject tree2Prefab; // Inspector에서 tree2 프리팹을 연결
+    public List<SpawnableObject> objects = new List<SpawnableObject>();
 
     public float minSpawnRate = 1f;
     public float maxSpawnRate = 2f;
@@ -48,9 +47,10 @@ public class Spawner : MonoBehaviour
 
     public void UpdateTree2Sprite(Texture2D newTexture)
     {
-        if(tree2Prefab != null)
+        // 첫 번째 오브젝트의 스프라이트를 업데이트하려면 아래의 코드를 사용하세요.
+        if (objects.Count > 0)
         {
-            SpriteRenderer sr = tree2Prefab.GetComponent<SpriteRenderer>();
+            SpriteRenderer sr = objects[0].prefab.GetComponent<SpriteRenderer>();
             if (sr != null)
             {
                 Sprite newSprite = Sprite.Create(newTexture, new Rect(0, 0, newTexture.width, newTexture.height), new Vector2(0.5f, 0.5f), 100.0f);
@@ -58,4 +58,28 @@ public class Spawner : MonoBehaviour
             }
         }
     }
+
+    public void AddNewObject(GameObject newPrefab, float newSpawnChance)
+    {
+        SpawnableObject newObj = new SpawnableObject
+        {
+            prefab = newPrefab,
+            spawnChance = newSpawnChance
+        };
+
+        objects.Add(newObj);
+    }
+    public void CreateAndAddNewObject(Texture2D newTexture, float newSpawnChance)
+    {
+        // 새로운 게임 오브젝트와 스프라이트 렌더러 생성
+        GameObject newObject = new GameObject("DynamicSpawnedObject");
+        SpriteRenderer sr = newObject.AddComponent<SpriteRenderer>();
+        
+        Sprite newSprite = Sprite.Create(newTexture, new Rect(0, 0, newTexture.width, newTexture.height), new Vector2(0.5f, 0.5f), 100.0f);
+        sr.sprite = newSprite;
+        
+        // 스폰 가능한 오브젝트 리스트에 추가
+        AddNewObject(newObject, newSpawnChance);
+    }
+
 }

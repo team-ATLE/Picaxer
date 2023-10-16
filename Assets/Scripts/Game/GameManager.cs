@@ -7,6 +7,9 @@ using Firebase.Auth;
 using Firebase.Database;
 using Firebase.Extensions;
 
+using static CommunityDAO;
+using static HighScore;
+
 [DefaultExecutionOrder(-1)]
 public class GameManager : MonoBehaviour
 {
@@ -23,6 +26,8 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI gameOverText;
     public Button retryButton;
     public RectTransform imageSelectionPanel;
+    public RectTransform imageContentPanel;
+
     public GameObject imageButtonPrefab;
 
     private Player player;
@@ -99,6 +104,7 @@ public class GameManager : MonoBehaviour
         gameOverText.gameObject.SetActive(true);
         retryButton.gameObject.SetActive(true);
         imageSelectionPanel.gameObject.SetActive(true);  // 게임오버 시 이미지 선택 패널 활성화
+        UpdateHiscore();
     }
 
     private void Update()
@@ -166,7 +172,7 @@ public class GameManager : MonoBehaviour
                 texture.LoadImage(fileData); 
 
                 // 버튼 생성하고 이미지 설정
-                GameObject buttonObj = Instantiate(imageButtonPrefab, imageSelectionPanel);
+                GameObject buttonObj = Instantiate(imageButtonPrefab, imageContentPanel);
                 buttonObj.GetComponent<RawImage>().texture = texture;
                 buttonObj.GetComponent<Button>().onClick.AddListener(() => SelectImage(texture));
             }
