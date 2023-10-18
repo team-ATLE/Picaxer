@@ -14,6 +14,7 @@ using Firebase.Auth;
 using Firebase.Database;
 using Firebase.Storage;
 using static CommunityDAO;
+using static Post;
 
 public class ProfileEditor : MonoBehaviour
 {
@@ -24,6 +25,8 @@ public class ProfileEditor : MonoBehaviour
     public TMP_Text Rank;
     public TMP_Text Rank_dec;
     public TMP_Text Score;
+    public TMP_Text Total_likes;
+    public TMP_Text Total_downloads;
     public TMP_Text Message;
     
     string imageName;
@@ -34,7 +37,13 @@ public class ProfileEditor : MonoBehaviour
     FirebaseStorage storage;
     StorageReference storageReference;
     RawImage photo;
-    // DatabaseReference reference;
+    public GameObject buttonPrefab, post_list;
+    public Transform contentPanel;
+    ScrollRect scrollRect;
+    DataSnapshot data;
+    List<Post> posts;
+    long total_likes = 0;
+    long total_downloads = 0;
 
     void Start()
     {
@@ -63,6 +72,8 @@ public class ProfileEditor : MonoBehaviour
         // Load user's rank
         reference = FirebaseDatabase.DefaultInstance.RootReference;
         reference.Child("Score").OrderByChild("highscore").ValueChanged += ScoreValueChanged;
+
+        GetPost();
     }
 
     IEnumerator ProfileLoad(string MediaUrl)
@@ -110,6 +121,76 @@ public class ProfileEditor : MonoBehaviour
                 }
                 n += 1;
             }
+        }
+    }
+
+    void GetPost()
+    {
+        reference.Child("Post").OrderByChild("email").EqualTo(user.Email).GetValueAsync().ContinueWithOnMainThread(task => {
+            if (task.IsCompleted) {
+                data = task.Result;
+                
+                // Convert into List
+                posts = new List<Post>();
+                foreach (DataSnapshot cur in data.Children)
+                {
+                    Post curPost = new Post(
+                        long.Parse(cur.Child("id").Value.ToString()),
+                        cur.Child("name").Value.ToString(),
+                        cur.Child("email").Value.ToString(), 
+                        cur.Child("imageURL").Value.ToString(), 
+                        cur.Child("content").Value.ToString(), 
+                        cur.Child("dateTime").Value.ToString(),
+                        long.Parse(cur.Child("like_counts").Value.ToString()),
+                        long.Parse(cur.Child("download_counts").Value.ToString())
+                    );
+                    total_likes += long.Parse(cur.Child("like_counts").Value.ToString());
+                    total_downloads += long.Parse(cur.Child("download_counts").Value.ToString());
+                    posts.Add(curPost);
+                }
+                posts.Reverse();
+                if (data.ChildrenCount > 0) Print(data.ChildrenCount);
+            }
+        });
+    }
+
+    void Print(long count) 
+    {
+        // Clear all existing buttons
+        foreach (Transform child in contentPanel)
+        {
+            Destroy(child.gameObject);
+        }
+
+        RectTransform rt = post_list.GetComponent<RectTransform>();
+        rt.sizeDelta = new Vector2(733, 300 * (count / 3 + (count % 3 > 0 ? 1 : 0))); // Mypostlist height 290 + space 10 = 300, 3 posts in each row
+        
+        foreach (Post post in posts)
+        {
+            GameObject content = Instantiate(buttonPrefab, contentPanel);
+            RawImage img = content.GetComponentInChildren<RawImage>();
+            StartCoroutine(ImageLoad(img, post.imageURL));
+            TMP_Text[] text_content = content.GetComponentsInChildren<TMP_Text>();
+            text_content[0].text = post.dateTime;
+            text_content[1].text = post.like_counts.ToString();
+            text_content[2].text = post.download_counts.ToString();
+        }
+
+        Total_likes.text = "Your arts got "+ total_likes +" like(s)!";
+        Total_downloads.text = "Your arts have been downloaded "+ total_downloads +" time(s)!";
+    }
+
+    IEnumerator ImageLoad(RawImage img, string MediaUrl)
+    {
+        UnityWebRequest request = UnityWebRequestTexture.GetTexture(MediaUrl);
+        yield return request.SendWebRequest();
+        if(request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
+        {
+            Debug.Log(request.error);
+        }
+        else
+        {
+            img.texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
         }
     }
 
